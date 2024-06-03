@@ -1,20 +1,22 @@
-﻿using NPOI.SS.UserModel;
+﻿using Ardalis.GuardClauses;
+using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 
 namespace QuickXL
 {
-    internal class XLWorkbookCreator<TDto>(ExportSettings workbookSettings, IList<TDto> excelData) where TDto : class, new()
+    internal class XLWorkbookCreator<TDto>(Exporter<TDto> exporter) where TDto : class, new()
     {
-        private readonly ExportSettings WorkbookSettings = workbookSettings;
-        private readonly IList<TDto> ExcelData = excelData;
+        private readonly Exporter<TDto> Exporter = exporter;        
 
         public XSSFWorkbook CreateWorkbook()
         {
+            Guard.Against.Null(Exporter);
+
             var workbook = new XSSFWorkbook();
-            var sheet = workbook.CreateSheet(WorkbookSettings.SheetName);
+            var sheet = workbook.CreateSheet(Exporter.WorkbookSettings.SheetName);
 
             // Create XLSheet object.
-            var xlsheet = new XLSheet<TDto>(WorkbookSettings.FirstRowIndex);
+            var xlsheet = new XLSheet<TDto>(Exporter.WorkbookSettings.FirstRowIndex);
 
             //  Verileri işleyip XLSheet nesnesine ekleyin
             PopulateSheet(xlsheet);
@@ -31,17 +33,22 @@ namespace QuickXL
         /// <param name="xlsheet"></param>
         private void PopulateSheet(XLSheet<TDto> xlsheet)
         {
-            var headers = XLSheetHelper<TDto>.GetHeaders();
+            Guard.Against.Null(xlsheet);
+
+            IList<string> headers = Exporter.ExportBuilder!.HeaderPropertySelectors.Select(x => x.Key).ToList();
+
             int columnIndex = 0;
             foreach (var header in headers)
             {
-                xlsheet.AddHeader(columnIndex++, header.Value);
+                xlsheet.AddHeader(columnIndex++, header);
             }
 
-            for (int index = 0; index < ExcelData.Count; index++)
+            List<TDto> excelData = Exporter.ExportBuilder!.Data;
+
+            for (int index = 0; index < excelData.Count; index++)
             {
-                var item = ExcelData[index];
-                XLSheetHelper<TDto>.MapPocoToSheet(item, index + xlsheet.FirstRowIndex + 1, headers, xlsheet);
+                var item = excelData[index];
+                MapPocoToSheet(item, index + xlsheet.FirstRowIndex + 1, headers, xlsheet);
             }
         }
 
@@ -61,6 +68,16 @@ namespace QuickXL
                     var cell = row.CreateCell(j);
                     cell.SetCellValue(cellValue?.Value);
                 }
+            }
+        }
+
+        private static void MapPocoToSheet(TDto item, int rowIndex, IList<string> headers, XLSheet<TDto> sheet)
+        {
+            int columnIndex = 0;
+            foreach (var header in headers)
+            {
+                var propertyValue = item.GetType().GetProperty(header)?.GetValue(item)?.ToString() ?? string.Empty;
+                sheet.AddCell(rowIndex, columnIndex++, propertyValue);
             }
         }
     }

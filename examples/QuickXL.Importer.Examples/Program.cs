@@ -6,7 +6,17 @@ ExportStyleSheet workbookSettings = new();
 
 var data = PopulateData();
 
-var result = Exporter.Export(workbookSettings, data);
+var builder = new ExportBuilder<Employee>()
+    .WithData(data)
+    .AddColumn("Name", x => x.Name)
+    .AddColumn("Surname", x => x.Surname)
+    .Build(cfg =>
+    {
+        cfg.SheetName = "Test_1234";
+        cfg.FirstRowIndex = 0;
+    });
+
+var result = builder.Export();
 
 string path = @"C:\Users\bkara\Projects\";
 
