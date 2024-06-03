@@ -8,11 +8,11 @@ var data = PopulateData();
 
 var result = Exporter.Export(workbookSettings, data);
 
-var path = @"C:\Users\TeknikMedya\Projects\QuickXL_Export.xlsx";
+string path = @"C:\Users\bkara\Projects\";
 
-if(result.Success)
+if(result.Succeeded)
 {
-    using var fs = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite);
+    using var fs = new FileStream(Path.Combine(path, "QuickXL.xlsx"), FileMode.CreateNew, FileAccess.ReadWrite);
 
     result.Data!.CopyTo(fs);
 }

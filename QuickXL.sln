@@ -5,21 +5,21 @@ VisualStudioVersion = 17.9.34902.65
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E42ACA66-CDA4-4A10-AF2B-0FDD81E7EF26}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickXL.Importer", "src\QuickXL.Importer\QuickXL.Importer.csproj", "{02B62976-38CD-48B0-824C-1CD78EED6BD4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickXL.Importer", "src\QuickXL.Importer\QuickXL.Importer.csproj", "{02B62976-38CD-48B0-824C-1CD78EED6BD4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickXL.Exporter", "src\QuickXL.Exporter\QuickXL.Exporter.csproj", "{A151CC66-5EFC-4CDD-A004-1065C0459EDB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickXL.Exporter", "src\QuickXL.Exporter\QuickXL.Exporter.csproj", "{A151CC66-5EFC-4CDD-A004-1065C0459EDB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{47EC284B-61A8-4D30-A199-329B2644EA0E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickXL.Core.Tests", "tests\QuickXL.Core.Tests\QuickXL.Core.Tests.csproj", "{6309A4E8-BC94-4C7E-B5B0-01F754CAB3C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickXL.Core.Tests", "tests\QuickXL.Core.Tests\QuickXL.Core.Tests.csproj", "{6309A4E8-BC94-4C7E-B5B0-01F754CAB3C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickXL.Importer.Tests", "tests\QuickXL.Importer.Tests\QuickXL.Importer.Tests.csproj", "{95B34AFD-BC4F-4BF7-83FE-A75D83C9E03D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickXL.Importer.Tests", "tests\QuickXL.Importer.Tests\QuickXL.Importer.Tests.csproj", "{95B34AFD-BC4F-4BF7-83FE-A75D83C9E03D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickXL.Exporter.Tests", "tests\QuickXL.Exporter.Tests\QuickXL.Exporter.Tests.csproj", "{48172B01-CF0D-4D7B-851D-5233114D9703}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickXL.Exporter.Tests", "tests\QuickXL.Exporter.Tests\QuickXL.Exporter.Tests.csproj", "{48172B01-CF0D-4D7B-851D-5233114D9703}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{0F50F0FD-2A39-43BF-AF13-C826A28532BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickXL.Importer.Examples", "examples\QuickXL.Importer.Examples\QuickXL.Importer.Examples.csproj", "{6B2B5138-3891-4B11-8B58-FEB9065D37DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickXL.Importer.Examples", "examples\QuickXL.Importer.Examples\QuickXL.Importer.Examples.csproj", "{6B2B5138-3891-4B11-8B58-FEB9065D37DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
