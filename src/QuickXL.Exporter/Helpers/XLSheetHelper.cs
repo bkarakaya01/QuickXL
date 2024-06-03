@@ -7,10 +7,10 @@ namespace QuickXL
         internal static Dictionary<string, string> GetHeaders()
         {
             return typeof(TDto).GetProperties()
-                .Where(prop => Attribute.IsDefined(prop, typeof(ExportHeader)))
+                .Where(prop => Attribute.IsDefined(prop, typeof(XLHeader)))
                 .ToDictionary(
                     prop => prop.Name,
-                    prop => prop.GetCustomAttribute<ExportHeader>()?.HeaderName ?? prop.Name);
+                    prop => prop.GetCustomAttribute<XLHeader>()?.HeaderName ?? prop.Name);
         }
 
         internal static void MapPocoToSheet(TDto item, int rowIndex, Dictionary<string, string> headers, IExcelSheet sheet)

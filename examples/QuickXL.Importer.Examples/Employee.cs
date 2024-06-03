@@ -2,13 +2,13 @@
 {
     public class Employee : IExcelPOCO
     {
-        [ExportHeader(nameof(Name))]
+        [XLHeader(nameof(Name))]
         public string Name { get; set; }
 
-        [ExportHeader(nameof(Surname))]
+        [XLHeader(nameof(Surname))]
         public string Surname { get; set; }
 
-        [ExportHeader(nameof(Age))]
+        [XLHeader(nameof(Age))]
         public int Age { get; set; }
     }
 

@@ -8,7 +8,7 @@
     /// </para>
     /// </summary>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
-    public class ExportHeader(string headerName) : Attribute
+    public class XLHeader(string headerName) : Attribute
     {
 
         /// <summary>
