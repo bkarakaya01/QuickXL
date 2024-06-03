@@ -2,7 +2,7 @@
 using QuickXL.Importer.Examples;
 
 
-WorkbookSettings workbookSettings = new();
+ExportStyleSheet workbookSettings = new();
 
 var data = PopulateData();
 

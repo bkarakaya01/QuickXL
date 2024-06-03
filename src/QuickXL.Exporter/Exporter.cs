@@ -2,38 +2,40 @@
 using QuickXL.Core.Extensions.IO;
 using QuickXL.Core.Result;
 
-namespace QuickXL
+namespace QuickXL;
+
+public sealed class Exporter
 {
-    public sealed class Exporter
+    /// <summary>
+    /// Creates a <see cref="XSSFWorkbook"/> to export Excel File as a <see cref="Stream"/>.
+    /// 
+    /// <para>
+    ///    Stream will be stored in <see cref="XLResult.Data"/>.
+    /// </para>
+    /// </summary>
+    /// <typeparam name="TDto">Data transfer object</typeparam>
+    /// <param name="exportSettings"><see cref="ExportSettings"/> object will be used to build metada.</param>
+    /// <param name="excelData">List data to export.</param>
+    /// <returns></returns>
+    public static XLResult Export<TDto>(ExportSettings exportSettings, IList<TDto> excelData) where TDto : class, new()
     {
-
-        /// <summary>
-        /// Creates a <see cref="XSSFWorkbook"/> to export Excel File as a <see cref="Stream"/>.
-        /// </summary>
-        /// <typeparam name="TPoco">Data transfer object which has to be marked as <see cref="IExcelPOCO"/> as a standart.</typeparam>
-        /// <param name="workbookSettings"><see cref="WorkbookSettings"/> will be used to store detailed information.</param>
-        /// <param name="excelData">List of data transfer objects which will be used to create the excel file.</param>
-        /// <returns></returns>
-        public static XLResult Export<TPoco>(WorkbookSettings workbookSettings, List<TPoco> excelData) where TPoco : class, IExcelPOCO, new()
+        try
         {
-            try
-            {
-                using var fs = new MemoryStream();
+            using var fs = new MemoryStream();
 
-                var workbookCreator = new XLWorkbookCreator<TPoco>(workbookSettings, excelData);
+            var workbookCreator = new XLWorkbookCreator<TDto>(exportSettings, excelData);
 
-                XSSFWorkbook workbook = workbookCreator.CreateWorkbook();
+            XSSFWorkbook workbook = workbookCreator.CreateWorkbook();
 
-                workbook.Write(fs);
+            workbook.Write(fs);
 
-                fs.Reset();
+            fs.Reset();
 
-                return XLResult.Success(fs);
-            }
-            catch (Exception ex)
-            {
-                return (XLResult)ex;
-            }
-        }        
-    }
+            return XLResult.Success(fs);
+        }
+        catch (Exception ex)
+        {
+            return (XLResult)ex;
+        }
+    }        
 }

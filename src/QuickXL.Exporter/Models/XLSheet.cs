@@ -1,6 +1,6 @@
 ﻿namespace QuickXL
 {
-    internal sealed class XLSheet<TPoco>(int firstRowIndex = 0) : IExcelSheet where TPoco : class, IExcelPOCO, new()
+    internal sealed class XLSheet<TDto>(int firstRowIndex = 0) : IExcelSheet where TDto : class, new()
     {
         private readonly IList<XLCell> _cells = [];
         public int FirstRowIndex { get; private set; } = firstRowIndex;

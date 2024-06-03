@@ -21,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{0F
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickXL.Importer.Examples", "examples\QuickXL.Importer.Examples\QuickXL.Importer.Examples.csproj", "{6B2B5138-3891-4B11-8B58-FEB9065D37DA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickXL.Core", "src\QuickXL.Core\QuickXL.Core.csproj", "{89DC6EDC-AFFF-4A64-9211-DCBD8478779C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{6B2B5138-3891-4B11-8B58-FEB9065D37DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B2B5138-3891-4B11-8B58-FEB9065D37DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B2B5138-3891-4B11-8B58-FEB9065D37DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89DC6EDC-AFFF-4A64-9211-DCBD8478779C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89DC6EDC-AFFF-4A64-9211-DCBD8478779C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89DC6EDC-AFFF-4A64-9211-DCBD8478779C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89DC6EDC-AFFF-4A64-9211-DCBD8478779C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -62,6 +68,7 @@ Global
 		{95B34AFD-BC4F-4BF7-83FE-A75D83C9E03D} = {47EC284B-61A8-4D30-A199-329B2644EA0E}
 		{48172B01-CF0D-4D7B-851D-5233114D9703} = {47EC284B-61A8-4D30-A199-329B2644EA0E}
 		{6B2B5138-3891-4B11-8B58-FEB9065D37DA} = {0F50F0FD-2A39-43BF-AF13-C826A28532BD}
+		{89DC6EDC-AFFF-4A64-9211-DCBD8478779C} = {E42ACA66-CDA4-4A10-AF2B-0FDD81E7EF26}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {079FEC4B-5CE3-445B-A6B8-53FB0F735E3C}

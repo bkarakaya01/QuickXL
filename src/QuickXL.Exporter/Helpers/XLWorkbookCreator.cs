@@ -3,10 +3,10 @@ using NPOI.XSSF.UserModel;
 
 namespace QuickXL
 {
-    internal class XLWorkbookCreator<TPoco>(WorkbookSettings workbookSettings, IList<TPoco> excelData) where TPoco : class, IExcelPOCO, new()
+    internal class XLWorkbookCreator<TDto>(ExportSettings workbookSettings, IList<TDto> excelData) where TDto : class, new()
     {
-        private readonly WorkbookSettings WorkbookSettings = workbookSettings;
-        private readonly IList<TPoco> ExcelData = excelData;
+        private readonly ExportSettings WorkbookSettings = workbookSettings;
+        private readonly IList<TDto> ExcelData = excelData;
 
         public XSSFWorkbook CreateWorkbook()
         {
@@ -14,13 +14,13 @@ namespace QuickXL
             var sheet = workbook.CreateSheet(WorkbookSettings.SheetName);
 
             // Create XLSheet object.
-            var xlsheet = new XLSheet<TPoco>(WorkbookSettings.FirstRowIndex);
+            var xlsheet = new XLSheet<TDto>(WorkbookSettings.FirstRowIndex);
 
             //  Verileri işleyip XLSheet nesnesine ekleyin
             PopulateSheet(xlsheet);
 
             // Transfer data defined under XLSheet into NPOI sheet.
-            XLWorkbookCreator<TPoco>.TransferDataToSheet(sheet, xlsheet);
+            XLWorkbookCreator<TDto>.TransferDataToSheet(sheet, xlsheet);
 
             return workbook;
         }
@@ -29,9 +29,9 @@ namespace QuickXL
         /// Populate <see cref="XLSheet{TPoco}"/> data.
         /// </summary>
         /// <param name="xlsheet"></param>
-        private void PopulateSheet(XLSheet<TPoco> xlsheet)
+        private void PopulateSheet(XLSheet<TDto> xlsheet)
         {
-            var headers = XLSheetHelper<TPoco>.GetHeaders();
+            var headers = XLSheetHelper<TDto>.GetHeaders();
             int columnIndex = 0;
             foreach (var header in headers)
             {
@@ -41,7 +41,7 @@ namespace QuickXL
             for (int index = 0; index < ExcelData.Count; index++)
             {
                 var item = ExcelData[index];
-                XLSheetHelper<TPoco>.MapPocoToSheet(item, index + xlsheet.FirstRowIndex + 1, headers, xlsheet);
+                XLSheetHelper<TDto>.MapPocoToSheet(item, index + xlsheet.FirstRowIndex + 1, headers, xlsheet);
             }
         }
 
@@ -50,7 +50,7 @@ namespace QuickXL
         /// </summary>
         /// <param name="sheet"></param>
         /// <param name="xlsheet"></param>
-        private static void TransferDataToSheet(ISheet sheet, XLSheet<TPoco> xlsheet)
+        private static void TransferDataToSheet(ISheet sheet, XLSheet<TDto> xlsheet)
         {
             for (int i = 0; i <= xlsheet.GetLastRow(); i++)
             {

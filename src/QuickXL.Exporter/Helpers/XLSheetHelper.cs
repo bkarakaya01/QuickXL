@@ -2,18 +2,18 @@
 
 namespace QuickXL
 {
-    internal sealed class XLSheetHelper<TPoco> where TPoco : class, IExcelPOCO, new()
+    internal sealed class XLSheetHelper<TDto> where TDto : class, new()
     {
         internal static Dictionary<string, string> GetHeaders()
         {
-            return typeof(TPoco).GetProperties()
-                .Where(prop => prop.GetCustomAttributes(typeof(ExportHeader), true).Length != 0)
+            return typeof(TDto).GetProperties()
+                .Where(prop => Attribute.IsDefined(prop, typeof(ExportHeader)))
                 .ToDictionary(
                     prop => prop.Name,
                     prop => prop.GetCustomAttribute<ExportHeader>()?.HeaderName ?? prop.Name);
         }
 
-        internal static void MapPocoToSheet(TPoco item, int rowIndex, Dictionary<string, string> headers, IExcelSheet sheet)
+        internal static void MapPocoToSheet(TDto item, int rowIndex, Dictionary<string, string> headers, IExcelSheet sheet)
         {
             int columnIndex = 0;
             foreach (var header in headers)
