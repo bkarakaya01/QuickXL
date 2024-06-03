@@ -8,9 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Abstraction\**" />
-    <EmbeddedResource Remove="Abstraction\**" />
-    <None Remove="Abstraction\**" />
+    <ProjectReference Include="..\..\src\QuickXL.Exporter\QuickXL.Exporter.csproj" />
   </ItemGroup>
 
 </Project>
