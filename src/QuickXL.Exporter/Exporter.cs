@@ -2,7 +2,6 @@
 using NPOI.XSSF.UserModel;
 using QuickXL.Core.Extensions.IO;
 using QuickXL.Core.Result;
-using System.IO;
 
 namespace QuickXL;
 
@@ -29,20 +28,26 @@ public sealed class Exporter<TDto> where TDto : class, new()
     public XLResult Export()
     {
         try
-        {            
+        {
             ValidateOrThrow();
 
-            using FileStream fs = new(Path.Combine(@"C:\Users\bkara\Projects\", "QuickXL.xlsx"), FileMode.Create, FileAccess.ReadWrite);
+            MemoryStream ms = new();
 
-            XLWorkbookCreator<TDto> workbookCreator = new(this);
+            using (var fs = new MemoryStream())
+            {
+                XLWorkbookCreator<TDto> workbookCreator = new(this);
 
-            XSSFWorkbook workbook = workbookCreator.CreateWorkbook();
+                XSSFWorkbook workbook = workbookCreator.CreateWorkbook();
 
-            workbook.Write(fs);
+                workbook.Write(fs);
 
-            fs.Reset();
+                var bytes = fs.ToArray();
+                ms.Write(bytes);
+            };           
 
-            return XLResult.Success(fs);
+            ms.Reset();
+
+            return XLResult.Success(ms);
         }
         catch (Exception ex)
         {
