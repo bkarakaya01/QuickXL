@@ -1,28 +1,34 @@
 ﻿using Ardalis.GuardClauses;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
+using QuickXL.Core.Contracts.Builders;
+using QuickXL.Core.Contracts.Settings;
+using QuickXL.Core.Models;
 
-namespace QuickXL
+namespace QuickXL.Infrastructure.Export.Helpers
 {
-    internal class XLWorkbookCreator<TDto>(Exporter<TDto> exporter) where TDto : class, new()
+    internal sealed class XLWorkbookHelper<TDto> where TDto : class, new()
     {
-        private readonly Exporter<TDto> Exporter = exporter;        
+        private static readonly XLWorkbookHelper<TDto> _instance = new();
 
-        public XSSFWorkbook CreateWorkbook()
+        private XLWorkbookHelper() { }
+
+        public static XLWorkbookHelper<TDto> Instance => _instance;
+
+        public XSSFWorkbook CreateWorkbook(IExportBuilder<TDto> exportBuilder, IWorkbookSettings workbookSettings)
         {
-            Guard.Against.Null(Exporter);
+            Guard.Against.Null(exportBuilder);
+            Guard.Against.Null(workbookSettings);
 
             var workbook = new XSSFWorkbook();
-            var sheet = workbook.CreateSheet(Exporter.WorkbookSettings.SheetName);
+            var sheet = workbook.CreateSheet(workbookSettings.SheetName);
 
-            // Create XLSheet object.
-            var xlsheet = new XLSheet<TDto>(Exporter.WorkbookSettings.FirstRowIndex);
+            var xlsheet = new XLSheet<TDto>(workbookSettings.FirstRowIndex);
 
-            //  Verileri işleyip XLSheet nesnesine ekleyin
-            PopulateSheet(xlsheet);
+            XLWorkbookHelper<TDto>.Instance.PopulateSheet(xlsheet, exportBuilder);
 
             // Transfer data defined under XLSheet into NPOI sheet.
-            XLWorkbookCreator<TDto>.TransferDataToSheet(sheet, xlsheet);
+            XLWorkbookHelper<TDto>.Instance.TransferDataToSheet(sheet, xlsheet);
 
             return workbook;
         }
@@ -31,11 +37,11 @@ namespace QuickXL
         /// Populate <see cref="XLSheet{TPoco}"/> data.
         /// </summary>
         /// <param name="xlsheet"></param>
-        private void PopulateSheet(XLSheet<TDto> xlsheet)
+        private void PopulateSheet(XLSheet<TDto> xlsheet, IExportBuilder<TDto> exportBuilder)
         {
             Guard.Against.Null(xlsheet);
 
-            IList<string> headers = Exporter.ExportBuilder!.HeaderPropertySelectors.Select(x => x.Key).ToList();
+            IList<string> headers = exportBuilder.HeaderPropertySelectors.Select(x => x.Key).ToList();
 
             int columnIndex = 0;
             foreach (var header in headers)
@@ -43,12 +49,13 @@ namespace QuickXL
                 xlsheet.AddHeader(columnIndex++, header);
             }
 
-            List<TDto> excelData = Exporter.ExportBuilder!.Data;
+            List<TDto> excelData = exportBuilder.Data;
 
             for (int index = 0; index < excelData.Count; index++)
             {
                 var item = excelData[index];
-                MapPocoToSheet(item, index + xlsheet.FirstRowIndex + 1, headers, xlsheet);
+                int rowIndex = index + xlsheet.FirstRowIndex + 1;
+                MapPocoToSheet(item, rowIndex, headers, xlsheet);
             }
         }
 
@@ -57,7 +64,7 @@ namespace QuickXL
         /// </summary>
         /// <param name="sheet"></param>
         /// <param name="xlsheet"></param>
-        private static void TransferDataToSheet(ISheet sheet, XLSheet<TDto> xlsheet)
+        private void TransferDataToSheet(ISheet sheet, XLSheet<TDto> xlsheet)
         {
             for (int i = 0; i <= xlsheet.GetLastRow(); i++)
             {

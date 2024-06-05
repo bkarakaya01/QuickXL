@@ -1,19 +1,24 @@
 ﻿using Ardalis.GuardClauses;
 using NPOI.XSSF.UserModel;
 using QuickXL.Core.Contracts;
+using QuickXL.Core.Contracts.Builders;
+using QuickXL.Core.Contracts.Settings;
 using QuickXL.Core.Extensions.IO;
 using QuickXL.Core.Result;
+using QuickXL.Infrastructure.Export.Helpers;
 
-namespace QuickXL;
+namespace QuickXL.Infrastructure.Export;
 
-internal sealed class Exporter<TDto> : IExporter<TDto> 
+internal sealed class Exporter<TDto> : IExporter<TDto>
     where TDto : class, new()
 {
-    internal ExportBuilder<TDto>? ExportBuilder { get; set; }
-    internal ExportSettings WorkbookSettings { get; set; }
-    internal Exporter()
+    public IExportBuilder<TDto>? ExportBuilder { get; set; }
+    
+    internal readonly IWorkbookSettings WorkbookSettings;
+
+    internal Exporter(IWorkbookSettings workbookSettings)
     {
-        WorkbookSettings = new();
+        WorkbookSettings = workbookSettings;
     }
 
     /// <summary>
@@ -24,7 +29,7 @@ internal sealed class Exporter<TDto> : IExporter<TDto>
     /// </para>
     /// </summary>
     /// <typeparam name="TDto">Data transfer object</typeparam>
-    /// <param name="configuration"><see cref="ExportSettings"/> object will be used to build metada.</param>
+    /// <param name="configuration"><see cref="Settings.WorkbookSettings"/> object will be used to build metada.</param>
     /// <param name="excelData">List data to export.</param>
     /// <returns></returns>
     public XLResult Export()
@@ -37,15 +42,13 @@ internal sealed class Exporter<TDto> : IExporter<TDto>
 
             using (var fs = new MemoryStream())
             {
-                XLWorkbookCreator<TDto> workbookCreator = new(this);
-
-                XSSFWorkbook workbook = workbookCreator.CreateWorkbook();
+                XSSFWorkbook workbook = XLWorkbookHelper<TDto>.Instance.CreateWorkbook(ExportBuilder!, WorkbookSettings);
 
                 workbook.Write(fs);
 
                 var bytes = fs.ToArray();
                 ms.Write(bytes);
-            };           
+            };
 
             ms.Reset();
 

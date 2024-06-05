@@ -2,23 +2,22 @@
 using QuickXL.Importer.Examples;
 
 
-ExportStyleSheet workbookSettings = new();
-
 var data = PopulateData();
 
-var builder = new ExportBuilder<Employee>()
+var exporter = new ExportBuilder<Employee>()
     .WithData(data)
     .AddColumn("Name", x => x.Name)
     .AddColumn("Surname", x => x.Surname)
+    .AddColumn("Age", x => x.Age)
     .Build(cfg =>
     {
         cfg.SheetName = "Test_1234";
         cfg.FirstRowIndex = 0;
     });
 
-var result = builder.Export();
+var result = exporter.Export();
 
-string path = @"C:\Users\bkara\Projects\";
+string path = @"C:\Users\TeknikMedya\Projects";
 
 if(result.Succeeded)
 {
