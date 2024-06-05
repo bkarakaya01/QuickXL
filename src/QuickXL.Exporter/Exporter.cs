@@ -1,11 +1,13 @@
 ﻿using Ardalis.GuardClauses;
 using NPOI.XSSF.UserModel;
+using QuickXL.Core.Contracts;
 using QuickXL.Core.Extensions.IO;
 using QuickXL.Core.Result;
 
 namespace QuickXL;
 
-public sealed class Exporter<TDto> where TDto : class, new()
+internal sealed class Exporter<TDto> : IExporter<TDto> 
+    where TDto : class, new()
 {
     internal ExportBuilder<TDto>? ExportBuilder { get; set; }
     internal ExportSettings WorkbookSettings { get; set; }
