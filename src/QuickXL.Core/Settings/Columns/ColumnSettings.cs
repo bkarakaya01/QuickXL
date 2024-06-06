@@ -13,9 +13,4 @@ public class ColumnSettings
     {
         AllowEmptyCells = true;
     }
-
-    public void Apply<TDto>(XLColumn<TDto> column) where TDto : class, new()
-    {
-        
-    }
 }

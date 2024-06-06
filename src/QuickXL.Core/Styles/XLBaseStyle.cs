@@ -26,7 +26,7 @@ public abstract class XLBaseStyle
         FontName = "Calibri";
         FontSize = 12;
     }
-    public virtual void Apply(ISheet excelSheet, XLCell xlCell)
+    internal virtual void Apply(ISheet excelSheet, XLCell xlCell)
     {
         ICell? cell = xlCell.Cell;
 

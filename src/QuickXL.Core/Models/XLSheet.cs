@@ -1,10 +1,13 @@
-﻿using QuickXL.Core.Models.Cells;
+﻿using Ardalis.GuardClauses;
+using QuickXL.Core.Models.Cells;
+using QuickXL.Core.Models.Columns;
+using QuickXL.Core.Models.Rows;
 
 namespace QuickXL.Core.Models;
 
 internal sealed class XLSheet<TDto>(int firstRowIndex = 0) where TDto : class, new()
 {
-    private readonly IList<XLCell> _cells = [];
+    private readonly IList<XLRow<TDto>> _rows = [];
     internal int FirstRowIndex { get; private set; } = firstRowIndex;
 
     /// <summary>
@@ -20,7 +23,7 @@ internal sealed class XLSheet<TDto>(int firstRowIndex = 0) where TDto : class, n
     {
         get
         {
-            return _cells.FirstOrDefault(x => x.RowIndex == rowIndex && x.ColumnIndex == columnIndex);
+            return _rows.FirstOrDefault(x => x.Index == rowIndex)?.Columns.FirstOrDefault(x => x.Index == columnIndex)?.XLCell;
         }
     }
 
@@ -33,38 +36,55 @@ internal sealed class XLSheet<TDto>(int firstRowIndex = 0) where TDto : class, n
     {
         get
         {
-            return _cells.Where(x => x.RowIndex == rowIndex).ToList();
+            return _rows.FirstOrDefault(x => x.Index == rowIndex)?.Columns.Select(x => x.XLCell).ToList() ?? [];
         }
     }
 
-    internal void AddCell(int rowIndex, int columnIndex, string value)
+    internal void AddRow(int rowIndex)
     {
-        if (this[rowIndex, columnIndex] != null)
-            throw new InvalidOperationException("Cell already exists.");
-
-        _cells.Add(new XLCell
+        _rows.Add(new()
         {
-            RowIndex = rowIndex,
-            ColumnIndex = columnIndex,
-            Value = value
+            Index = rowIndex,
+            IsHeaderRow = rowIndex == FirstRowIndex
         });
     }
 
-    internal void AddHeader(int columnIndex, string header)
+    internal void AddColumn(XLRow<TDto> row, int columnIndex, string headerName)
     {
-        AddCell(FirstRowIndex, columnIndex, header);
+        if (row.Columns.Any(col => col.Index == columnIndex))
+            throw new InvalidOperationException("Column already exists.");
+
+        row.Columns.Add(new()
+        {
+            Index = columnIndex,
+            HeaderName = headerName
+        });
     }
+
+    internal void AddCell(XLColumn<TDto> column, string value)
+    {
+        if (column.XLCell != null)
+            throw new InvalidOperationException("Cell already exists.");
+
+        column.XLCell = new XLCell()
+        {
+            Value = value
+        };
+    }
+
+    internal XLRow<TDto>? GetRow(int rowIndex) => _rows.FirstOrDefault(x => x.Index == rowIndex);
+
     internal int GetLastRow()
     {
-        return _cells.Any()
-            ? _cells.Max(c => c.RowIndex)
-            : FirstRowIndex;
+        return _rows.Max(x => x.Index);
     }
 
     internal int GetLastColumn(int rowIndex)
     {
-        return _cells.Where(c => c.RowIndex == rowIndex).Any()
-            ? _cells.Where(c => c.RowIndex == rowIndex).Max(c => c.ColumnIndex)
-            : 0;
+        XLRow<TDto>? row = GetRow(rowIndex);
+
+        Guard.Against.Null(row);
+
+        return row.Columns.Max(x => x.Index);
     }
 }
