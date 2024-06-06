@@ -43,7 +43,7 @@ internal sealed class XLWorkbookHelper<TDto> where TDto : class, new()
     {
         Guard.Against.Null(xlsheet);
 
-        IList<string> headers = exportBuilder.ColumnBuilder!.Columns!.Select(x => x.Name).ToList();
+        IList<string> headers = exportBuilder.ColumnBuilder.Columns.Select(x => x.Name).ToList();
 
         int columnIndex = 0;
         foreach (var header in headers)
