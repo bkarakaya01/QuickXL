@@ -66,13 +66,13 @@ internal sealed class XLWorkbookHelper<TDto> where TDto : class, new()
     /// <param name="xlsheet"></param>
     private void TransferDataToSheet(ISheet sheet, XLSheet<TDto> xlsheet)
     {
-        for (int i = 0; i <= xlsheet.GetLastRow(); i++)
+        for (int rowIndex = 0; rowIndex <= xlsheet.GetLastRow(); rowIndex++)
         {
-            var row = sheet.CreateRow(i);
-            for (int j = 0; j <= xlsheet.GetLastColumn(i); j++)
+            var row = sheet.CreateRow(rowIndex);
+            for (int columnIndex = 0; columnIndex <= xlsheet.GetLastColumn(rowIndex); columnIndex++)
             {
-                var cellValue = xlsheet[i, j];
-                var cell = row.CreateCell(j);
+                var cellValue = xlsheet[rowIndex, columnIndex];
+                var cell = row.CreateCell(columnIndex);
                 cell.SetCellValue(cellValue?.Value);
             }
         }
