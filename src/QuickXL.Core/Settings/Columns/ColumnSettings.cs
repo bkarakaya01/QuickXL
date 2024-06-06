@@ -1,4 +1,6 @@
-﻿namespace QuickXL.Core.Settings.Columns;
+﻿using QuickXL.Core.Models.Columns;
+
+namespace QuickXL.Core.Settings.Columns;
 
 public class ColumnSettings
 {
