@@ -1,5 +1,5 @@
-﻿using QuickXL.Core.Factory;
-using QuickXL.Infrastructure.Export.Builders;
+﻿using QuickXL.Core.Builders;
+using QuickXL.Core.Factory;
 
 namespace QuickXL
 {

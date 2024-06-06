@@ -1,6 +1,6 @@
 ﻿using Ardalis.GuardClauses;
 
-namespace QuickXL.Infrastructure.Export.Builders;
+namespace QuickXL.Core.Builders;
 
 public sealed class ExportBuilder<TDto> where TDto : class, new()
 {

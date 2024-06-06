@@ -2,7 +2,7 @@
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 
-namespace QuickXL.Infrastructure.Export.Settings;
+namespace QuickXL.Core.Settings;
 
 /// <summary>
 /// Settings class to manage the created Excel Workbook's style.

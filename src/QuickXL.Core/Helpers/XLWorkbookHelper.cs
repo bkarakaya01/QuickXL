@@ -1,9 +1,9 @@
 ﻿using Ardalis.GuardClauses;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
+using QuickXL.Core.Builders;
 using QuickXL.Core.Models;
 using QuickXL.Core.Settings;
-using QuickXL.Infrastructure.Export.Builders;
 
 namespace QuickXL.Core.Helpers;
 
