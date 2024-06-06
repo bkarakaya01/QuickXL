@@ -1,5 +1,4 @@
 ﻿using QuickXL;
-using QuickXL.Core.Settings;
 using QuickXL.Importer.Examples;
 
 
@@ -9,9 +8,18 @@ var data = PopulateData();
 var exporter = new XLExport<Employee>()
     .CreateBuilder()
     .WithData(data)
-    .AddColumn("Name", x => x.Name)
-    .AddColumn("Surname", x => x.Surname)
-    .AddColumn("Age", x => x.Age)
+    .AddColumn("Name", x => x.Name, cfg =>
+    {
+        cfg.AllowEmptyCells = false;        
+    })
+    .AddColumn("Surname", x => x.Surname, cfg =>
+    {
+        cfg.AllowEmptyCells = false;
+    })
+    .AddColumn("Age", x => x.Age, cfg => 
+    { 
+        cfg.AllowEmptyCells = false; 
+    })
     .Build(cfg =>
     {
         cfg.SheetName = "Test_1234";
