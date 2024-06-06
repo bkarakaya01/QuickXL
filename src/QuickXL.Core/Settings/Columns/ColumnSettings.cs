@@ -1,4 +1,6 @@
-﻿namespace QuickXL.Core.Settings.Columns;
+﻿using QuickXL.Core.Models.Columns;
+
+namespace QuickXL.Core.Settings.Columns;
 
 public class ColumnSettings
 {
@@ -10,5 +12,10 @@ public class ColumnSettings
     public ColumnSettings()
     {
         AllowEmptyCells = true;
+    }
+
+    public void Apply<TDto>(XLColumn<TDto> column) where TDto : class, new()
+    {
+        
     }
 }

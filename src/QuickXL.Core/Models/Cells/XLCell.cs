@@ -6,7 +6,7 @@ namespace QuickXL.Core.Models.Cells;
 // <summary>
 /// Object as a reference to a cell in an excel file.
 /// </summary>
-public record XLCell : IExcelUnit
+internal class XLCell : IExcelUnit
 {
     /// <summary>
     /// Cell value.
