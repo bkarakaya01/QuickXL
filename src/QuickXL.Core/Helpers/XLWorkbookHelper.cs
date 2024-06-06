@@ -18,8 +18,6 @@ internal sealed class XLWorkbookHelper<TDto> where TDto : class, new()
     public XSSFWorkbook CreateWorkbook(ExportBuilder<TDto> exportBuilder, WorkbookSettings workbookSettings)
     {
         Guard.Against.Null(exportBuilder);
-        Guard.Against.Null(exportBuilder.ColumnBuilder);
-        Guard.Against.Null(exportBuilder.ColumnBuilder.Columns);
         Guard.Against.Null(workbookSettings);
 
         var workbook = new XSSFWorkbook();
