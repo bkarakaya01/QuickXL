@@ -1,23 +1,23 @@
 ﻿using Ardalis.GuardClauses;
 using NPOI.XSSF.UserModel;
-using QuickXL.Core.Contracts;
-using QuickXL.Core.Contracts.Builders;
-using QuickXL.Core.Contracts.Settings;
 using QuickXL.Core.Extensions.IO;
+using QuickXL.Core.Helpers;
 using QuickXL.Core.Result;
-using QuickXL.Infrastructure.Export.Helpers;
+using QuickXL.Core.Settings;
+using QuickXL.Infrastructure.Export.Builders;
 
-namespace QuickXL.Infrastructure.Export;
+namespace QuickXL.Core;
 
-internal sealed class Exporter<TDto> : IExporter<TDto>
+public sealed class Exporter<TDto>
     where TDto : class, new()
 {
-    public IExportBuilder<TDto>? ExportBuilder { get; set; }
+    internal ExportBuilder<TDto> ExportBuilder;
     
-    internal readonly IWorkbookSettings WorkbookSettings;
+    internal readonly WorkbookSettings WorkbookSettings;
 
-    internal Exporter(IWorkbookSettings workbookSettings)
+    internal Exporter(ExportBuilder<TDto> exportBuilder, WorkbookSettings workbookSettings)
     {
+        ExportBuilder = exportBuilder;
         WorkbookSettings = workbookSettings;
     }
 

@@ -1,12 +1,11 @@
-﻿using QuickXL.Core.Contracts.Models;
-using QuickXL.Core.Models.Cells;
+﻿using QuickXL.Core.Models.Cells;
 
 namespace QuickXL.Core.Models;
 
-public sealed class XLSheet<TDto>(int firstRowIndex = 0) : IExcelSheet where TDto : class, new()
+internal sealed class XLSheet<TDto>(int firstRowIndex = 0) where TDto : class, new()
 {
     private readonly IList<XLCell> _cells = [];
-    public int FirstRowIndex { get; private set; } = firstRowIndex;
+    internal int FirstRowIndex { get; private set; } = firstRowIndex;
 
     /// <summary>
     /// Public getter of the specified <see cref="ExcelCell"/>.
@@ -17,7 +16,7 @@ public sealed class XLSheet<TDto>(int firstRowIndex = 0) : IExcelSheet where TDt
     /// <param name="rowIndex">Specified row index.</param>
     /// <param name="columnIndex">Specified column index.</param>
     /// <returns></returns>
-    public XLCell? this[int rowIndex, int columnIndex]
+    internal XLCell? this[int rowIndex, int columnIndex]
     {
         get
         {
@@ -30,7 +29,7 @@ public sealed class XLSheet<TDto>(int firstRowIndex = 0) : IExcelSheet where TDt
     /// </summary>
     /// <param name="rowIndex">Specified row index.</param>
     /// <returns></returns>
-    public IList<XLCell> this[int rowIndex]
+    internal IList<XLCell> this[int rowIndex]
     {
         get
         {
@@ -38,7 +37,7 @@ public sealed class XLSheet<TDto>(int firstRowIndex = 0) : IExcelSheet where TDt
         }
     }
 
-    public void AddCell(int rowIndex, int columnIndex, string value)
+    internal void AddCell(int rowIndex, int columnIndex, string value)
     {
         if (this[rowIndex, columnIndex] != null)
             throw new InvalidOperationException("Cell already exists.");
@@ -51,18 +50,18 @@ public sealed class XLSheet<TDto>(int firstRowIndex = 0) : IExcelSheet where TDt
         });
     }
 
-    public void AddHeader(int columnIndex, string header)
+    internal void AddHeader(int columnIndex, string header)
     {
         AddCell(FirstRowIndex, columnIndex, header);
     }
-    public int GetLastRow()
+    internal int GetLastRow()
     {
         return _cells.Any()
             ? _cells.Max(c => c.RowIndex)
             : FirstRowIndex;
     }
 
-    public int GetLastColumn(int rowIndex)
+    internal int GetLastColumn(int rowIndex)
     {
         return _cells.Where(c => c.RowIndex == rowIndex).Any()
             ? _cells.Where(c => c.RowIndex == rowIndex).Max(c => c.ColumnIndex)

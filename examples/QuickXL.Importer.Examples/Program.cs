@@ -1,10 +1,12 @@
 ﻿using QuickXL;
 using QuickXL.Importer.Examples;
+using QuickXL.Infrastructure.Export.Builders;
 
 
 var data = PopulateData();
 
-var exporter = new ExportBuilder<Employee>()
+var exporter = new XLExport<Employee>()
+    .CreateBuilder()
     .WithData(data)
     .AddColumn("Name", x => x.Name)
     .AddColumn("Surname", x => x.Surname)
@@ -14,6 +16,7 @@ var exporter = new ExportBuilder<Employee>()
         cfg.SheetName = "Test_1234";
         cfg.FirstRowIndex = 0;
     });
+
 
 var result = exporter.Export();
 

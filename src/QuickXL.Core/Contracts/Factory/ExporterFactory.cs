@@ -1,0 +1,12 @@
+﻿using QuickXL.Core.Settings;
+using QuickXL.Infrastructure.Export.Builders;
+
+namespace QuickXL.Core.Factory;
+
+public static class ExporterFactory<TDto> where TDto : class, new()
+{
+    public static ExportBuilder<TDto> CreateBuilder() => new();
+
+    public static Exporter<TDto> CreateExporter(ExportBuilder<TDto> exportBuilder, WorkbookSettings workbookSettings) => 
+        new(exportBuilder, workbookSettings);
+}
