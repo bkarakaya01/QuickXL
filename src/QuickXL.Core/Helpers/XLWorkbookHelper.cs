@@ -19,7 +19,7 @@ internal sealed class XLWorkbookHelper<TDto> where TDto : class, new()
     {
         Guard.Against.Null(exportBuilder);
         Guard.Against.Null(exportBuilder.ColumnBuilder);
-        Guard.Against.Null(exportBuilder.ColumnBuilder.HeaderPropertySelectors);
+        Guard.Against.Null(exportBuilder.ColumnBuilder.Columns);
         Guard.Against.Null(workbookSettings);
 
         var workbook = new XSSFWorkbook();
@@ -43,7 +43,7 @@ internal sealed class XLWorkbookHelper<TDto> where TDto : class, new()
     {
         Guard.Against.Null(xlsheet);
 
-        IList<string> headers = exportBuilder.ColumnBuilder!.HeaderPropertySelectors!.Select(x => x.Key).ToList();
+        IList<string> headers = exportBuilder.ColumnBuilder!.Columns!.Select(x => x.Key).ToList();
 
         int columnIndex = 0;
         foreach (var header in headers)

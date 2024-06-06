@@ -9,27 +9,27 @@ namespace QuickXL.Core.Builders;
 public sealed class ColumnBuilder<TDto>
     where TDto : class, new()
 {
-    internal IList<XLColumn<TDto>> HeaderPropertySelectors { get; set; }
+    internal IList<XLColumn<TDto>> Columns { get; set; }
 
     internal ExportBuilder<TDto> ExportBuilder;
 
     internal ColumnBuilder(ExportBuilder<TDto> exportBuilder)
     {
         ExportBuilder = exportBuilder;
-        HeaderPropertySelectors = [];
+        Columns = [];
     }
 
 
     public ColumnBuilder<TDto> AddColumn(string header, Func<TDto, object> propertySelector, Action<ColumnSettings>? configuration = null)
     {
         Guard.Against.Null(ExportBuilder);
-        Guard.Against.Null(HeaderPropertySelectors);
+        Guard.Against.Null(Columns);
 
         ColumnSettings columnSettings = new();
 
         configuration?.Invoke(columnSettings);
 
-        HeaderPropertySelectors.Add(new(header, propertySelector, columnSettings));
+        Columns.Add(new(header, propertySelector, columnSettings));
 
         return this;
     }
