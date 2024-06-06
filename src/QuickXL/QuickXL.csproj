@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\QuickXL.Core\QuickXL.Core.csproj" />
-    <ProjectReference Include="..\QuickXL.Infrastructure\QuickXL.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

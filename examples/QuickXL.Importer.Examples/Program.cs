@@ -1,9 +1,11 @@
 ﻿using QuickXL;
+using QuickXL.Core.Settings;
 using QuickXL.Importer.Examples;
 using QuickXL.Infrastructure.Export.Builders;
 
 
 var data = PopulateData();
+
 
 var exporter = new XLExport<Employee>()
     .CreateBuilder()
