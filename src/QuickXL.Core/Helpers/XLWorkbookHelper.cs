@@ -18,8 +18,6 @@ internal sealed class XLWorkbookHelper<TDto> where TDto : class, new()
     public XSSFWorkbook CreateWorkbook(ExportBuilder<TDto> exportBuilder, WorkbookSettings workbookSettings)
     {
         Guard.Against.Null(exportBuilder);
-        Guard.Against.Null(exportBuilder.ColumnBuilder);
-        Guard.Against.Null(exportBuilder.ColumnBuilder.HeaderPropertySelectors);
         Guard.Against.Null(workbookSettings);
 
         var workbook = new XSSFWorkbook();
@@ -43,7 +41,7 @@ internal sealed class XLWorkbookHelper<TDto> where TDto : class, new()
     {
         Guard.Against.Null(xlsheet);
 
-        IList<string> headers = exportBuilder.ColumnBuilder!.HeaderPropertySelectors!.Select(x => x.Key).ToList();
+        IList<string> headers = exportBuilder.ColumnBuilder.Columns.Select(x => x.Name).ToList();
 
         int columnIndex = 0;
         foreach (var header in headers)
@@ -68,13 +66,13 @@ internal sealed class XLWorkbookHelper<TDto> where TDto : class, new()
     /// <param name="xlsheet"></param>
     private void TransferDataToSheet(ISheet sheet, XLSheet<TDto> xlsheet)
     {
-        for (int i = 0; i <= xlsheet.GetLastRow(); i++)
+        for (int rowIndex = 0; rowIndex <= xlsheet.GetLastRow(); rowIndex++)
         {
-            var row = sheet.CreateRow(i);
-            for (int j = 0; j <= xlsheet.GetLastColumn(i); j++)
+            var row = sheet.CreateRow(rowIndex);
+            for (int columnIndex = 0; columnIndex <= xlsheet.GetLastColumn(rowIndex); columnIndex++)
             {
-                var cellValue = xlsheet[i, j];
-                var cell = row.CreateCell(j);
+                var cellValue = xlsheet[rowIndex, columnIndex];
+                var cell = row.CreateCell(columnIndex);
                 cell.SetCellValue(cellValue?.Value);
             }
         }
