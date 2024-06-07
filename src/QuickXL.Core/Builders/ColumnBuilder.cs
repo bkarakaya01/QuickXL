@@ -3,6 +3,7 @@ using QuickXL.Core.Factory;
 using QuickXL.Core.Models;
 using QuickXL.Core.Settings;
 using QuickXL.Core.Settings.Columns;
+using System.Linq.Expressions;
 
 namespace QuickXL.Core.Builders;
 
@@ -20,7 +21,7 @@ public sealed class ColumnBuilder<TDto>
     }
 
 
-    public ColumnBuilder<TDto> AddColumn(string header, Func<TDto, object> propertySelector, Action<ColumnSettings>? configuration = null)
+    public ColumnBuilder<TDto> AddColumn(Expression<Func<TDto, object>> propertySelector, Action<ColumnSettings>? configuration = null)
     {
         Guard.Against.Null(ExportBuilder);
         Guard.Against.Null(ColumnBuilderItems);
@@ -29,12 +30,7 @@ public sealed class ColumnBuilder<TDto>
 
         configuration?.Invoke(columnSettings);
 
-        ColumnBuilderItems.Add(new()
-        {
-            Header = header,
-            PropertySelector = propertySelector,
-            ColumnSettings = columnSettings
-        });
+        ColumnBuilderItems.Add(new(propertySelector, columnSettings));
 
         return this;
     }
