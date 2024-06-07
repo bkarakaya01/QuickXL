@@ -8,15 +8,16 @@ var data = PopulateData();
 var exporter = new XLExport<Employee>()
     .CreateBuilder()
     .WithData(data)
-    .AddColumn("Name", x => x.Name, cfg =>
+    .AddColumn(x => x.Name, cfg =>
     {
+        cfg.HeaderName = "Test";
         cfg.AllowEmptyCells = false;        
     })
-    .AddColumn("Surname", x => x.Surname, cfg =>
+    .AddColumn(x => x.Surname, cfg =>
     {
         cfg.AllowEmptyCells = false;
     })
-    .AddColumn("Age", x => x.Age, cfg => 
+    .AddColumn(x => x.Age, cfg => 
     { 
         cfg.AllowEmptyCells = false; 
     })

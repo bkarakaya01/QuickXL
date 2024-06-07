@@ -37,27 +37,27 @@ internal sealed class XLWorkbookHelper<TDto> where TDto : class, new()
     {
         Guard.Against.Null(_xlsheet);
 
-        IList<string> headers = GetHeaders(exportBuilder);
-        AddHeaderRow(headers, workbookSettings.FirstRowIndex);
+        Dictionary<string, string> headers = GetHeaders(exportBuilder);
+        AddHeaderRow([.. headers.Keys], workbookSettings.FirstRowIndex);
 
         List<TDto> excelData = exportBuilder.Data;
-        AddDataRows(headers, excelData);
+        AddDataRows([.. headers.Values], excelData);
     }
 
-    private IList<string> GetHeaders(ExportBuilder<TDto> exportBuilder)
+    private static Dictionary<string, string> GetHeaders(ExportBuilder<TDto> exportBuilder)
     {
-        return exportBuilder.ColumnBuilder.ColumnBuilderItems.Select(x => x.Header).ToList();
+        return exportBuilder.ColumnBuilder.ColumnBuilderItems.Select(x => new KeyValuePair<string, string>(x.HeaderName, x.GetPropertyName())).ToDictionary();
     }
 
-    private void AddHeaderRow(IList<string> headers, int rowIndex)
+    private void AddHeaderRow(List<string> headerNames, int rowIndex)
     {
         _xlsheet!.AddRow(rowIndex);
         var headerRow = _xlsheet.GetRow(rowIndex);
         Guard.Against.Null(headerRow);
 
-        for (int columnIndex = 0; columnIndex < headers.Count; columnIndex++)
+        for (int columnIndex = 0; columnIndex < headerNames.Count; columnIndex++)
         {
-            AddColumnToRow(headerRow, columnIndex, headers[columnIndex]);
+            AddColumnToRow(headerRow, columnIndex, headerNames[columnIndex]);
         }
     }
 
@@ -69,29 +69,29 @@ internal sealed class XLWorkbookHelper<TDto> where TDto : class, new()
         _xlsheet.AddCell(column, header);
     }
 
-    private void AddDataRows(IList<string> headers, List<TDto> excelData)
+    private void AddDataRows(List<string> headerProperties, List<TDto> excelData)
     {
         for (int index = 0; index < excelData.Count; index++)
         {
             var item = excelData[index];
             int rowIndex = index + _xlsheet!.FirstRowIndex + 1;
-            AddDataRow(item, headers, rowIndex);
+            AddDataRow(item, headerProperties, rowIndex);
         }
     }
 
-    private void AddDataRow(TDto item, IList<string> headers, int rowIndex)
+    private void AddDataRow(TDto item, List<string> headerProperties, int rowIndex)
     {
         _xlsheet!.AddRow(rowIndex);
         var row = _xlsheet.GetRow(rowIndex);
         Guard.Against.Null(row);
-        MapPocoToSheet(item, row, headers);
+        MapPocoToSheet(item, row, headerProperties);
     }
 
-    private void MapPocoToSheet(TDto item, XLRow<TDto> row, IList<string> headers)
+    private void MapPocoToSheet(TDto item, XLRow<TDto> row, List<string> headerProperties)
     {
-        for (int columnIndex = InitialColumnIndex; columnIndex < headers.Count; columnIndex++)
+        for (int columnIndex = InitialColumnIndex; columnIndex < headerProperties.Count; columnIndex++)
         {
-            var header = headers[columnIndex];
+            var header = headerProperties[columnIndex];
             var propertyValue = GetPropertyValue(item, header);
             AddCellToRow(row, columnIndex, propertyValue);
         }
