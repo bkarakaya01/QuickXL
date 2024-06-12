@@ -1,5 +1,7 @@
-﻿using QuickXL;
+﻿using NPOI.XSSF.UserModel;
+using QuickXL;
 using QuickXL.Importer.Examples;
+using System.Drawing;
 
 
 var data = PopulateData();
@@ -11,7 +13,11 @@ var exporter = new XLExport<Employee>()
     .AddColumn(x => x.Name, cfg =>
     {
         cfg.HeaderName = "Test";
-        cfg.AllowEmptyCells = false;        
+        cfg.AllowEmptyCells = false;
+        cfg.HeaderStyle = new()
+        {
+            Bold = true
+        };
     })
     .AddColumn(x => x.Surname, cfg =>
     {

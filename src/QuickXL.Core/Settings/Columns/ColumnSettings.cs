@@ -1,4 +1,6 @@
-﻿namespace QuickXL.Core.Settings.Columns;
+﻿using QuickXL.Core.Styles.Columns;
+
+namespace QuickXL.Core.Settings.Columns;
 
 public class ColumnSettings
 {
@@ -12,8 +14,13 @@ public class ColumnSettings
     /// </summary>
     public bool AllowEmptyCells { get; set; }
 
+    public XLHeaderStyle HeaderStyle { get; set; }
+    public XLCellStyle CellStyle { get; set; }
+
     public ColumnSettings()
     {
         AllowEmptyCells = true;
+        HeaderStyle = new();
+        CellStyle = new();
     }
 }
