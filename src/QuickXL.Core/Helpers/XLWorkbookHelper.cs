@@ -29,6 +29,7 @@ internal sealed class XLWorkbookHelper<TDto> where TDto : class, new()
 
         PopulateSheet(exportBuilder, workbookSettings);
         TransferDataToSheet(sheet);
+        ApplyStyles(sheet, exportBuilder);
 
         return workbook;
     }
@@ -57,17 +58,9 @@ internal sealed class XLWorkbookHelper<TDto> where TDto : class, new()
 
         for (int columnIndex = 0; columnIndex < headerNames.Count; columnIndex++)
         {
-            AddColumnToRow(headerRow, columnIndex, headerNames[columnIndex]);
+            AddCellToRow(headerRow, columnIndex, headerNames[columnIndex], isHeaderCell: true);
         }
-    }
-
-    private void AddColumnToRow(XLRow<TDto> row, int columnIndex, string header)
-    {
-        _xlsheet!.AddColumn(row, columnIndex, header);
-        var column = row.GetColumn(columnIndex);
-        Guard.Against.Null(column);
-        _xlsheet.AddCell(column, header);
-    }
+    }    
 
     private void AddDataRows(List<string> headerProperties, List<TDto> excelData)
     {
@@ -97,17 +90,15 @@ internal sealed class XLWorkbookHelper<TDto> where TDto : class, new()
         }
     }
 
+    private void AddCellToRow(XLRow<TDto> row, int columnIndex, string value, bool isHeaderCell = false)
+    {
+        Guard.Against.Null(row);
+        _xlsheet!.AddCell(row, columnIndex, value, isHeaderCell);
+    }
+
     private static string GetPropertyValue(TDto item, string header)
     {
         return item.GetType().GetProperty(header)?.GetValue(item)?.ToString() ?? string.Empty;
-    }
-
-    private void AddCellToRow(XLRow<TDto> row, int columnIndex, string propertyValue)
-    {
-        _xlsheet!.AddColumn(row, columnIndex, propertyValue);
-        var column = row.GetColumn(columnIndex);
-        Guard.Against.Null(column);
-        _xlsheet.AddCell(column, propertyValue);
     }
 
     private void TransferDataToSheet(ISheet sheet)
@@ -128,6 +119,14 @@ internal sealed class XLWorkbookHelper<TDto> where TDto : class, new()
             var cellValue = _xlsheet[rowIndex, columnIndex];
             var cell = row.CreateCell(columnIndex);
             cell.SetCellValue(cellValue?.Value);
+        }
+    }
+
+    private void ApplyStyles(ISheet sheet, ExportBuilder<TDto> exportBuilder)
+    {
+        foreach (var columnBuilderItem in exportBuilder.ColumnBuilder.ColumnBuilderItems)
+        {
+            //columnBuilderItem.ColumnSettings.CellStyle.Apply()
         }
     }
 }

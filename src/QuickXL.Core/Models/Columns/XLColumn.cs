@@ -1,21 +1,17 @@
 ﻿using QuickXL.Core.Models.Cells;
-using QuickXL.Core.Settings.Columns;
 
 namespace QuickXL.Core.Models.Columns;
 
-internal class XLColumn<TDto>
+internal class XLColumn
 {
     protected required internal int Index { get; set; }
     protected required internal string HeaderName { get; set; }
-    protected internal Func<TDto, object> PropertySelector { get; set; }
-    protected internal ColumnSettings ColumnSettings { get; set; }    
-    protected internal XLCell XLCell { get; set; }
+    protected internal List<XLCell> XLCells { get; set; }
 
-    //public XLColumn(int index, string name, Func<TDto, object> propertySelector, ColumnSettings columnSettings)
-    //{
-    //    Index = index;
-    //    HeaderName = name;
-    //    PropertySelector = propertySelector;
-    //    ColumnSettings = columnSettings;
-    //}    
+    public XLColumn()
+    {
+        XLCells = [];
+    }
+
+    public void Add(XLCell cell) => XLCells.Add(cell);
 }

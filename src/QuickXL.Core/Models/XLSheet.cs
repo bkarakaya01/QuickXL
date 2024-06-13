@@ -23,7 +23,7 @@ internal sealed class XLSheet<TDto>(int firstRowIndex = 0) where TDto : class, n
     {
         get
         {
-            return _rows.FirstOrDefault(x => x.Index == rowIndex)?.Columns.FirstOrDefault(x => x.Index == columnIndex)?.XLCell;
+            return _rows.FirstOrDefault(x => x.Index == rowIndex)?.Cells.FirstOrDefault(x => x.ColumnIndex == columnIndex);
         }
     }
 
@@ -36,8 +36,34 @@ internal sealed class XLSheet<TDto>(int firstRowIndex = 0) where TDto : class, n
     {
         get
         {
-            return _rows.FirstOrDefault(x => x.Index == rowIndex)?.Columns.Select(x => x.XLCell).ToList() ?? [];
+            return _rows.FirstOrDefault(x => x.Index == rowIndex)?.Cells.ToList() ?? [];
         }
+    }
+
+    internal XLColumn GetColumn(int columnIndex)
+    {
+        XLRow<TDto>? headerRow = _rows.FirstOrDefault(x => x.IsHeaderRow);
+        Guard.Against.Null(headerRow);
+
+        XLCell? headerCell = headerRow.GetCell(columnIndex);
+        Guard.Against.Null(headerCell);
+
+        var column = new XLColumn()
+        {
+            Index = columnIndex,
+            HeaderName = headerCell.Value ?? string.Empty,
+        };
+
+        var rows = _rows.OrderBy(x => x.Index).ToList();
+
+        foreach (var row in rows)
+        {
+            var cell = this[row.Index, columnIndex];
+
+            if (cell != null)
+                column.Add(cell);
+        }
+        return column;
     }
 
     internal void AddRow(int rowIndex)
@@ -49,27 +75,19 @@ internal sealed class XLSheet<TDto>(int firstRowIndex = 0) where TDto : class, n
         });
     }
 
-    internal void AddColumn(XLRow<TDto> row, int columnIndex, string headerName)
+    internal void AddCell(XLRow<TDto> row, int columnIndex, string value, bool isHeaderCell = false)
     {
-        if (row.Columns.Any(col => col.Index == columnIndex))
-            throw new InvalidOperationException("Column already exists.");
+        if (isHeaderCell && row.Index != FirstRowIndex)
+            throw new InvalidOperationException($"Header cells must be defined at {FirstRowIndex}");
 
-        row.Columns.Add(new()
-        {
-            Index = columnIndex,
-            HeaderName = headerName
-        });
-    }
-
-    internal void AddCell(XLColumn<TDto> column, string value)
-    {
-        if (column.XLCell != null)
+        if (this[row.Index, columnIndex] != null)
             throw new InvalidOperationException("Cell already exists.");
 
-        column.XLCell = new XLCell()
+        row.Cells.Add(new XLCell
         {
-            Value = value
-        };
+            Value = value,
+            IsHeaderCell = isHeaderCell
+        });
     }
 
     internal XLRow<TDto>? GetRow(int rowIndex) => _rows.FirstOrDefault(x => x.Index == rowIndex);
@@ -85,6 +103,6 @@ internal sealed class XLSheet<TDto>(int firstRowIndex = 0) where TDto : class, n
 
         Guard.Against.Null(row);
 
-        return row.Columns.Max(x => x.Index);
+        return row.Cells.Max(x => x.ColumnIndex);
     }
 }

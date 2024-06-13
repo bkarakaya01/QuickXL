@@ -11,6 +11,12 @@ namespace QuickXL.Core.Models.Colors
         public int? A { get; } = a;
 
 
+        public static XLColor Make(byte r, byte g, byte b, byte? a = null)
+        {
+            return new(r, g, b, a);
+        }
+
+
         public static implicit operator XSSFColor(XLColor color)
         {
             return color.A.HasValue

@@ -8,6 +8,10 @@ namespace QuickXL.Core.Models.Cells;
 /// </summary>
 internal class XLCell : IExcelUnit
 {
+    public int ColumnIndex { get; set; }
+
+    public bool IsHeaderCell { get; set; }
+
     /// <summary>
     /// Cell value.
     /// </summary>

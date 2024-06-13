@@ -1,4 +1,4 @@
-﻿using QuickXL.Core.Models.Columns;
+﻿using QuickXL.Core.Models.Cells;
 
 namespace QuickXL.Core.Models.Rows
 {
@@ -7,12 +7,12 @@ namespace QuickXL.Core.Models.Rows
         protected internal int Index { get; set; }
         protected internal bool IsHeaderRow { get; set; }
 
-        protected internal IList<XLColumn<TDto>> Columns { get; set; }
+        protected internal IList<XLCell> Cells { get; set; }
         public XLRow()
         {
-            Columns = [];
+            Cells = [];
         }
 
-        public XLColumn<TDto>? GetColumn(int columnIndex) => Columns.FirstOrDefault(x => x.Index == columnIndex);
+        public XLCell? GetCell(int columnIndex) => Cells.FirstOrDefault(x => x.ColumnIndex == columnIndex);
     }
 }
