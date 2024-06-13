@@ -1,6 +1,7 @@
 ﻿using NPOI.SS.UserModel;
 using QuickXL;
 using QuickXL.Core.Models.Colors;
+using QuickXL.Core.Styles;
 using QuickXL.Importer.Examples;
 
 
@@ -12,43 +13,38 @@ var exporter = new XLExport<Employee>()
     .WithData(data)
     .AddColumn(x => x.Name, cfg =>
     {
-        cfg.AutoSizeColumns = true;
         cfg.HeaderName = "Test";
         cfg.AllowEmptyCells = false;
-        cfg.HeaderStyle = new()
-        {
-            Bold = true,
-            BackgroundColor = XLColor.Make(255, 0, 0),
-            ForegroundColor = XLColor.Make(255, 255, 0),
-            Italic = true,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
-            FontName = "Bauhaus 93",
-            FontSize = 25,
-            Strikeout = true,
-            FillPattern = FillPattern.Diamonds
-        };
-        cfg.CellStyle = new()
-        {            
-            Bold = true,
-            BackgroundColor = XLColor.Make(255, 0, 255),
-            ForegroundColor = XLColor.Make(255, 255, 0),
-            Italic = true,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
-            FontName = "Bauhaus 93",
-            FontSize = 25,
-            Strikeout = true,
-            FillPattern = FillPattern.ThickHorizontalBands
-        };
+
     })
     .AddColumn(x => x.Surname, cfg =>
     {
         cfg.AllowEmptyCells = false;
     })
-    .AddColumn(x => x.Age, cfg => 
-    { 
-        cfg.AllowEmptyCells = false; 
+    .AddColumn(x => x.Age, cfg =>
+    {
+        cfg.AllowEmptyCells = false;
+    })
+    .AddGeneralStyle(new XLGeneralStyle
+    {
+        AutoSizeColumns = true,
+        HeaderStyle = new()
+        {
+            Bold = true,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+            FontName = "Segoe UI Light",
+            FontSize = 14,
+            ForegroundColor = XLColor.Make(210, 210, 210),
+            FillPattern = FillPattern.SolidForeground
+        },
+        CellStyle = new()
+        {
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+            FontName = "Segoe UI Light",
+            FontSize = 13,
+        }
     })
     .Build(cfg =>
     {

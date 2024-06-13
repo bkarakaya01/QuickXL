@@ -3,6 +3,7 @@ using QuickXL.Core.Factory;
 using QuickXL.Core.Models;
 using QuickXL.Core.Settings;
 using QuickXL.Core.Settings.Columns;
+using QuickXL.Core.Styles;
 using System.Linq.Expressions;
 
 namespace QuickXL.Core.Builders;
@@ -13,6 +14,8 @@ public sealed class ColumnBuilder<TDto>
     internal IList<ColumnBuilderItem<TDto>> ColumnBuilderItems { get; set; }
 
     internal ExportBuilder<TDto> ExportBuilder;
+
+    internal XLGeneralStyle? XLGeneralStyle { get; set; }
 
     internal ColumnBuilder(ExportBuilder<TDto> exportBuilder)
     {
@@ -31,6 +34,13 @@ public sealed class ColumnBuilder<TDto>
         configuration?.Invoke(columnSettings);
 
         ColumnBuilderItems.Add(new(propertySelector, columnSettings));
+
+        return this;
+    }
+
+    public ColumnBuilder<TDto> AddGeneralStyle(XLGeneralStyle xlGeneralStyle)
+    {
+        XLGeneralStyle = xlGeneralStyle;
 
         return this;
     }

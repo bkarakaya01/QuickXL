@@ -1,4 +1,5 @@
 ﻿using Ardalis.GuardClauses;
+using QuickXL.Core.Styles;
 
 namespace QuickXL.Core.Builders;
 
@@ -11,7 +12,7 @@ public sealed class ExportBuilder<TDto> where TDto : class, new()
     {
         Data = [];
         ColumnBuilder = new ColumnBuilder<TDto>(this);
-    }
+    }    
 
     public ColumnBuilder<TDto> WithData(IEnumerable<TDto> data)
     {
@@ -20,5 +21,5 @@ public sealed class ExportBuilder<TDto> where TDto : class, new()
         Data.AddRange(data);
 
         return ColumnBuilder;
-    }
+    }    
 }
