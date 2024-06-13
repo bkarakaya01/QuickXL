@@ -14,7 +14,9 @@ public class ColumnSettings
     /// </summary>
     public bool AllowEmptyCells { get; set; }
 
-    public XLHeaderStyle HeaderStyle { get; set; }
+    public bool AutoSizeColumns { get; set; }
+
+    public XLCellStyle HeaderStyle { get; set; }
     public XLCellStyle CellStyle { get; set; }
 
     public ColumnSettings()

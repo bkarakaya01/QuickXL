@@ -1,13 +1,16 @@
 ﻿using Ardalis.GuardClauses;
+using NPOI.SS.UserModel;
 using QuickXL.Core.Models.Cells;
 using QuickXL.Core.Models.Columns;
 using QuickXL.Core.Models.Rows;
 
 namespace QuickXL.Core.Models;
 
-internal sealed class XLSheet<TDto>(int firstRowIndex = 0) where TDto : class, new()
+internal sealed class XLSheet<TDto>(ISheet sheet, int firstRowIndex = 0) where TDto : class, new()
 {
     private readonly IList<XLRow<TDto>> _rows = [];
+
+    internal readonly ISheet Sheet = sheet;
     internal int FirstRowIndex { get; private set; } = firstRowIndex;
 
     /// <summary>
@@ -66,6 +69,14 @@ internal sealed class XLSheet<TDto>(int firstRowIndex = 0) where TDto : class, n
         return column;
     }
 
+    internal XLColumn GetColumn(string headerName)
+    {
+        XLCell? headerCell = this[FirstRowIndex]?.FirstOrDefault(x => x.Value == headerName);
+        Guard.Against.Null(headerCell);
+
+        return GetColumn(headerCell.ColumnIndex);
+    }
+
     internal void AddRow(int rowIndex)
     {
         _rows.Add(new()
@@ -86,7 +97,8 @@ internal sealed class XLSheet<TDto>(int firstRowIndex = 0) where TDto : class, n
         row.Cells.Add(new XLCell
         {
             Value = value,
-            IsHeaderCell = isHeaderCell
+            IsHeaderCell = isHeaderCell,
+            ColumnIndex = columnIndex
         });
     }
 
@@ -95,6 +107,15 @@ internal sealed class XLSheet<TDto>(int firstRowIndex = 0) where TDto : class, n
     internal int GetLastRow()
     {
         return _rows.Max(x => x.Index);
+    }
+
+    internal int GetLastColumn()
+    {
+        XLRow<TDto>? row = GetRow(FirstRowIndex);
+
+        Guard.Against.Null(row);
+
+        return row.Cells.Max(x => x.ColumnIndex);
     }
 
     internal int GetLastColumn(int rowIndex)
