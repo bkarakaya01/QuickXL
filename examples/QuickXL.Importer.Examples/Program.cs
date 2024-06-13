@@ -1,5 +1,6 @@
 ﻿using NPOI.XSSF.UserModel;
 using QuickXL;
+using QuickXL.Core.Models.Colors;
 using QuickXL.Importer.Examples;
 using System.Drawing;
 
@@ -16,7 +17,8 @@ var exporter = new XLExport<Employee>()
         cfg.AllowEmptyCells = false;
         cfg.HeaderStyle = new()
         {
-            Bold = true
+            Bold = true,
+            BackgroundColor = XLColor.Make(150, 0, 0)
         };
     })
     .AddColumn(x => x.Surname, cfg =>
