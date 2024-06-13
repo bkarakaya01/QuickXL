@@ -6,6 +6,7 @@ using QuickXL.Core.Models;
 using QuickXL.Core.Models.Cells;
 using QuickXL.Core.Models.Rows;
 using QuickXL.Core.Settings;
+using QuickXL.Core.Styles;
 
 namespace QuickXL.Core.Helpers;
 
@@ -131,39 +132,54 @@ internal sealed class XLWorkbookHelper<TDto> where TDto : class, new()
 
     private void ApplyStyles(ExportBuilder<TDto> exportBuilder)
     {
+        XLGeneralStyle? generalStyle = exportBuilder.ColumnBuilder.XLGeneralStyle;
+
         foreach (var columnBuilderItem in exportBuilder.ColumnBuilder.ColumnBuilderItems)
         {
             var column = _xlsheet!.GetColumn(columnBuilderItem.HeaderName);
 
             foreach (var cell in column.XLCells)
             {
-                if (cell.IsHeaderCell)
+                if (generalStyle != null)
                 {
-                    columnBuilderItem.ColumnSettings.HeaderStyle.Apply(_xlsheet, cell);
+                    if (cell.IsHeaderCell)
+                        generalStyle.HeaderStyle.Apply(_xlsheet, cell);
+                    else
+                        generalStyle.CellStyle.Apply(_xlsheet, cell);
                 }
                 else
-                    columnBuilderItem.ColumnSettings.CellStyle.Apply(_xlsheet, cell);
+                {
+                    if (cell.IsHeaderCell)
+                        columnBuilderItem.ColumnSettings.HeaderStyle.Apply(_xlsheet, cell);
+                    else
+                        columnBuilderItem.ColumnSettings.CellStyle.Apply(_xlsheet, cell);
+                }
             }
         }
 
-        ApplyAutoSizeColumns(exportBuilder);
+        ApplyAutoSizeColumns(exportBuilder, generalStyle);
     }
 
-    private void ApplyAutoSizeColumns(ExportBuilder<TDto> exportBuilder)
+    private void ApplyAutoSizeColumns(ExportBuilder<TDto> exportBuilder, XLGeneralStyle? generalStyle)
     {
         var cells = _xlsheet![_xlsheet.FirstRowIndex];
 
-        var clSettings = exportBuilder.ColumnBuilder.ColumnBuilderItems.Select(x => x.ColumnSettings);
+        var columnBuilderItems = exportBuilder.ColumnBuilder.ColumnBuilderItems;
 
-        foreach (var columnSetting in clSettings)
+        foreach (var columnBuilderItem in columnBuilderItems)
         {
-            if (columnSetting.AutoSizeColumns)
+            XLCell? cell = cells.FirstOrDefault(x => x.Value == columnBuilderItem.HeaderName);
+            Guard.Against.Null(cell);
+
+            if (generalStyle != null)
             {
-                XLCell? cell = cells.FirstOrDefault(x => x.Value == columnSetting.HeaderName);
-
-                Guard.Against.Null(cell);
-
-                _xlsheet.Sheet.AutoSizeColumn(cell.ColumnIndex);
+                if (generalStyle.AutoSizeColumns)
+                    _xlsheet.Sheet.AutoSizeColumn(cell.ColumnIndex);
+            }
+            else
+            {
+                if (columnBuilderItem.ColumnSettings.AutoSizeColumns)
+                    _xlsheet.Sheet.AutoSizeColumn(cell.ColumnIndex);
             }
         }
     }
