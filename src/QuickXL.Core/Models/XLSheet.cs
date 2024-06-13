@@ -1,6 +1,5 @@
 ﻿using Ardalis.GuardClauses;
 using QuickXL.Core.Models.Cells;
-using QuickXL.Core.Models.Columns;
 using QuickXL.Core.Models.Rows;
 
 namespace QuickXL.Core.Models;
@@ -23,7 +22,7 @@ internal sealed class XLSheet<TDto>(int firstRowIndex = 0) where TDto : class, n
     {
         get
         {
-            return _rows.FirstOrDefault(x => x.Index == rowIndex)?.Columns.FirstOrDefault(x => x.Index == columnIndex)?.XLCell;
+            return _rows.FirstOrDefault(x => x.Index == rowIndex)?.Cells.FirstOrDefault(x => x.ColumnIndex == columnIndex);
         }
     }
 
@@ -36,7 +35,8 @@ internal sealed class XLSheet<TDto>(int firstRowIndex = 0) where TDto : class, n
     {
         get
         {
-            return _rows.FirstOrDefault(x => x.Index == rowIndex)?.Columns.Select(x => x.XLCell).ToList() ?? [];
+            // Get column
+            return _rows.FirstOrDefault(x => x.Index == rowIndex)?.Cells.ToList() ?? [];
         }
     }
 
@@ -49,27 +49,15 @@ internal sealed class XLSheet<TDto>(int firstRowIndex = 0) where TDto : class, n
         });
     }
 
-    internal void AddColumn(XLRow<TDto> row, int columnIndex, string headerName)
+    internal void AddCell(XLRow<TDto> row, int columnIndex, string value)
     {
-        if (row.Columns.Any(col => col.Index == columnIndex))
-            throw new InvalidOperationException("Column already exists.");
-
-        row.Columns.Add(new()
-        {
-            Index = columnIndex,
-            HeaderName = headerName
-        });
-    }
-
-    internal void AddCell(XLColumn<TDto> column, string value)
-    {
-        if (column.XLCell != null)
+        if (this[row.Index, columnIndex] != null)
             throw new InvalidOperationException("Cell already exists.");
 
-        column.XLCell = new XLCell()
+        row.Cells.Add(new XLCell
         {
             Value = value
-        };
+        });
     }
 
     internal XLRow<TDto>? GetRow(int rowIndex) => _rows.FirstOrDefault(x => x.Index == rowIndex);
@@ -85,6 +73,6 @@ internal sealed class XLSheet<TDto>(int firstRowIndex = 0) where TDto : class, n
 
         Guard.Against.Null(row);
 
-        return row.Columns.Max(x => x.Index);
+        return row.Cells.Max(x => x.ColumnIndex);
     }
 }

@@ -27,11 +27,7 @@ public class ExportStyleSheet
         XLHeaderStyle = new();
         XLCellStyle = new();
     }
-    internal void Apply(ISheet excelSheet, XLHeaderCell headerCell)
-    {        
-        XLHeaderStyle.Apply(excelSheet, headerCell);
-    }
-
+   
     internal void Apply(ISheet excelSheet, XLCell cell)
     {
         XLCellStyle.Apply(excelSheet, cell);
