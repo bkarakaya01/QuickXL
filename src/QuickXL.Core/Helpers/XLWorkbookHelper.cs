@@ -3,6 +3,7 @@ using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using QuickXL.Core.Builders;
 using QuickXL.Core.Models;
+using QuickXL.Core.Models.Cells;
 using QuickXL.Core.Models.Rows;
 using QuickXL.Core.Settings;
 
@@ -25,11 +26,11 @@ internal sealed class XLWorkbookHelper<TDto> where TDto : class, new()
 
         var workbook = new XSSFWorkbook();
         var sheet = workbook.CreateSheet(workbookSettings.SheetName);
-        _xlsheet = new XLSheet<TDto>(workbookSettings.FirstRowIndex);
+        _xlsheet = new XLSheet<TDto>(sheet, workbookSettings.FirstRowIndex);
 
         PopulateSheet(exportBuilder, workbookSettings);
-        TransferDataToSheet(sheet);
-        ApplyStyles(sheet, exportBuilder);
+        TransferDataToSheet();
+        ApplyStyles(exportBuilder);
 
         return workbook;
     }
@@ -60,7 +61,7 @@ internal sealed class XLWorkbookHelper<TDto> where TDto : class, new()
         {
             AddCellToRow(headerRow, columnIndex, headerNames[columnIndex], isHeaderCell: true);
         }
-    }    
+    }
 
     private void AddDataRows(List<string> headerProperties, List<TDto> excelData)
     {
@@ -101,12 +102,12 @@ internal sealed class XLWorkbookHelper<TDto> where TDto : class, new()
         return item.GetType().GetProperty(header)?.GetValue(item)?.ToString() ?? string.Empty;
     }
 
-    private void TransferDataToSheet(ISheet sheet)
+    private void TransferDataToSheet()
     {
         var lastRow = _xlsheet!.GetLastRow();
         for (int rowIndex = 0; rowIndex <= lastRow; rowIndex++)
         {
-            var row = sheet.CreateRow(rowIndex);
+            var row = _xlsheet.Sheet.CreateRow(rowIndex);
             TransferRowData(row, rowIndex);
         }
     }
@@ -117,16 +118,53 @@ internal sealed class XLWorkbookHelper<TDto> where TDto : class, new()
         for (int columnIndex = 0; columnIndex <= lastColumn; columnIndex++)
         {
             var cellValue = _xlsheet[rowIndex, columnIndex];
+
+            var xlCell = _xlsheet[rowIndex, columnIndex];
+            Guard.Against.Null(xlCell);
+
             var cell = row.CreateCell(columnIndex);
             cell.SetCellValue(cellValue?.Value);
+
+            xlCell!.Cell = cell;
         }
     }
 
-    private void ApplyStyles(ISheet sheet, ExportBuilder<TDto> exportBuilder)
+    private void ApplyStyles(ExportBuilder<TDto> exportBuilder)
     {
         foreach (var columnBuilderItem in exportBuilder.ColumnBuilder.ColumnBuilderItems)
         {
-            //columnBuilderItem.ColumnSettings.CellStyle.Apply()
+            var column = _xlsheet!.GetColumn(columnBuilderItem.HeaderName);
+
+            foreach (var cell in column.XLCells)
+            {
+                if (cell.IsHeaderCell)
+                {
+                    columnBuilderItem.ColumnSettings.HeaderStyle.Apply(_xlsheet, cell);
+                }
+                else
+                    columnBuilderItem.ColumnSettings.CellStyle.Apply(_xlsheet, cell);
+            }
+        }
+
+        ApplyAutoSizeColumns(exportBuilder);
+    }
+
+    private void ApplyAutoSizeColumns(ExportBuilder<TDto> exportBuilder)
+    {
+        var cells = _xlsheet![_xlsheet.FirstRowIndex];
+
+        var clSettings = exportBuilder.ColumnBuilder.ColumnBuilderItems.Select(x => x.ColumnSettings);
+
+        foreach (var columnSetting in clSettings)
+        {
+            if (columnSetting.AutoSizeColumns)
+            {
+                XLCell? cell = cells.FirstOrDefault(x => x.Value == columnSetting.HeaderName);
+
+                Guard.Against.Null(cell);
+
+                _xlsheet.Sheet.AutoSizeColumn(cell.ColumnIndex);
+            }
         }
     }
 }
