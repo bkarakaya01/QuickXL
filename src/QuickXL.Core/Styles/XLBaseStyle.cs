@@ -2,6 +2,7 @@
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using QuickXL.Core.Models.Cells;
+using QuickXL.Core.Models.Colors;
 
 namespace QuickXL.Core.Styles;
 
@@ -12,8 +13,8 @@ public abstract class XLBaseStyle
     public bool Strikeout { get; set; }
     public string FontName { get; set; }
     public short FontSize { get; set; }
-    public XSSFColor? ForegroundColor { get; set; }
-    public XSSFColor? BackgroundColor { get; set; }
+    public XLColor? ForegroundColor { get; set; }
+    public XLColor? BackgroundColor { get; set; }
     public FillPattern? FillPattern { get; set; }
     public HorizontalAlignment? HorizontalAlignment { get; set; }
     public VerticalAlignment? VerticalAlignment { get; set; }
