@@ -1,5 +1,6 @@
 ﻿using Ardalis.GuardClauses;
 using QuickXL.Core.Models.Cells;
+using QuickXL.Core.Models.Columns;
 using QuickXL.Core.Models.Rows;
 
 namespace QuickXL.Core.Models;
@@ -35,9 +36,34 @@ internal sealed class XLSheet<TDto>(int firstRowIndex = 0) where TDto : class, n
     {
         get
         {
-            // Get column
             return _rows.FirstOrDefault(x => x.Index == rowIndex)?.Cells.ToList() ?? [];
         }
+    }
+
+    internal XLColumn GetColumn(int columnIndex)
+    {
+        XLRow<TDto>? headerRow = _rows.FirstOrDefault(x => x.IsHeaderRow);
+        Guard.Against.Null(headerRow);
+
+        XLCell? headerCell = headerRow.GetCell(columnIndex);
+        Guard.Against.Null(headerCell);
+
+        var column = new XLColumn()
+        {
+            Index = columnIndex,
+            HeaderName = headerCell.Value ?? string.Empty,
+        };
+
+        var rows = _rows.OrderBy(x => x.Index).ToList();
+
+        foreach (var row in rows)
+        {
+            var cell = this[row.Index, columnIndex];
+
+            if (cell != null)
+                column.Add(cell);
+        }
+        return column;
     }
 
     internal void AddRow(int rowIndex)
@@ -49,14 +75,18 @@ internal sealed class XLSheet<TDto>(int firstRowIndex = 0) where TDto : class, n
         });
     }
 
-    internal void AddCell(XLRow<TDto> row, int columnIndex, string value)
+    internal void AddCell(XLRow<TDto> row, int columnIndex, string value, bool isHeaderCell = false)
     {
+        if (isHeaderCell && row.Index != FirstRowIndex)
+            throw new InvalidOperationException($"Header cells must be defined at {FirstRowIndex}");
+
         if (this[row.Index, columnIndex] != null)
             throw new InvalidOperationException("Cell already exists.");
 
         row.Cells.Add(new XLCell
         {
-            Value = value
+            Value = value,
+            IsHeaderCell = isHeaderCell
         });
     }
 

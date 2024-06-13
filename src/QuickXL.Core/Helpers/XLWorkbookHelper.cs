@@ -58,7 +58,7 @@ internal sealed class XLWorkbookHelper<TDto> where TDto : class, new()
 
         for (int columnIndex = 0; columnIndex < headerNames.Count; columnIndex++)
         {
-            AddCellToRow(headerRow, columnIndex, headerNames[columnIndex]);
+            AddCellToRow(headerRow, columnIndex, headerNames[columnIndex], isHeaderCell: true);
         }
     }    
 
@@ -90,10 +90,10 @@ internal sealed class XLWorkbookHelper<TDto> where TDto : class, new()
         }
     }
 
-    private void AddCellToRow(XLRow<TDto> row, int columnIndex, string value)
+    private void AddCellToRow(XLRow<TDto> row, int columnIndex, string value, bool isHeaderCell = false)
     {
         Guard.Against.Null(row);
-        _xlsheet!.AddCell(row, columnIndex, value);
+        _xlsheet!.AddCell(row, columnIndex, value, isHeaderCell);
     }
 
     private static string GetPropertyValue(TDto item, string header)
