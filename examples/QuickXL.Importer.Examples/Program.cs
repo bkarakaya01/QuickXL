@@ -1,6 +1,4 @@
-﻿using NPOI.SS.UserModel;
-using QuickXL;
-using QuickXL.Core.Models.Colors;
+﻿using QuickXL;
 using QuickXL.Core.Styles;
 using QuickXL.Importer.Examples;
 
@@ -28,23 +26,23 @@ var exporter = new XLExport<Employee>()
     .AddGeneralStyle(new XLGeneralStyle
     {
         AutoSizeColumns = true,
-        HeaderStyle = new()
-        {
-            Bold = true,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
-            FontName = "Segoe UI Light",
-            FontSize = 14,
-            ForegroundColor = XLColor.Make(210, 210, 210),
-            FillPattern = FillPattern.SolidForeground
-        },
-        CellStyle = new()
-        {
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
-            FontName = "Segoe UI Light",
-            FontSize = 13,
-        }
+        //HeaderStyle = new()
+        //{
+        //    Bold = true,
+        //    HorizontalAlignment = HorizontalAlignment.Center,
+        //    VerticalAlignment = VerticalAlignment.Center,
+        //    FontName = "Segoe UI Light",
+        //    FontSize = 14,
+        //    ForegroundColor = XLColor.Make(210, 210, 210),
+        //    FillPattern = FillPattern.SolidForeground
+        //},
+        //CellStyle = new()
+        //{
+        //    HorizontalAlignment = HorizontalAlignment.Center,
+        //    VerticalAlignment = VerticalAlignment.Center,
+        //    FontName = "Segoe UI Light",
+        //    FontSize = 13,
+        //}
     })
     .Build(cfg =>
     {

@@ -1,5 +1,4 @@
 ﻿using Ardalis.GuardClauses;
-using NPOI.XSSF.UserModel;
 using QuickXL.Core.Builders;
 using QuickXL.Core.Extensions.IO;
 using QuickXL.Core.Helpers;
@@ -42,12 +41,12 @@ public sealed class Exporter<TDto>
 
             using (var fs = new MemoryStream())
             {
-                XSSFWorkbook workbook = XLWorkbookHelper<TDto>.Instance.CreateWorkbook(ExportBuilder!, WorkbookSettings);
+                //XSSFWorkbook workbook = XLWorkbookHelper<TDto>.Instance.CreateWorkbook(ExportBuilder!, WorkbookSettings);
 
-                workbook.Write(fs);
+                //workbook.Write(fs);
 
-                var bytes = fs.ToArray();
-                ms.Write(bytes);
+                //var bytes = fs.ToArray();
+                //ms.Write(bytes);
             };
 
             ms.Reset();
