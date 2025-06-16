@@ -1,4 +1,5 @@
 ﻿using QuickXL.Core.Models.Colors;
+using QuickXL.Core.Styles.Units;
 
 namespace QuickXL.Core.Styles.Columns;
 
@@ -11,4 +12,6 @@ public sealed class XLCellStyle
     public short FontSize { get; set; } = 12;
     public XLColor? ForegroundColor { get; set; }
     public XLColor? BackgroundColor { get; set; }
+    public XLHorizontalAlignment? HorizontalAlignment { get; set; }
+    public XLVerticalAlignment? VerticalAlignment { get; set; }
 }
