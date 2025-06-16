@@ -1,4 +1,5 @@
-﻿using QuickXL.Core.Builders;
+﻿using Ardalis.GuardClauses;
+using QuickXL.Core.Builders;
 using QuickXL.Core.Helpers;
 using QuickXL.Core.Settings;
 
@@ -28,20 +29,20 @@ internal class QuickXLExporter : IXLExporter
     }
 
     public byte[] Export<TDto>(
-           IEnumerable<TDto> data,
-           Action<ColumnBuilder<TDto>> configureColumns)
-           where TDto : class, new()
+    IEnumerable<TDto> data,
+    Action<ColumnBuilder<TDto>> configureColumns)
+    where TDto : class, new()
     {
-        // 1) Builder oluşturup data’yı set et
-        var builder = new ExportBuilder<TDto>()
-            .WithData(data);
+        Guard.Against.Null(data, nameof(data));
+        Guard.Against.Null(configureColumns, nameof(configureColumns));
 
-        // 2) Sütun konfigürasyonunu uygula
-        configureColumns(builder.ColumnBuilder);
-
-        // 3) Dosyayı oluştur
-        return new XLWorkbookHelper<TDto>()
-               .CreateWorkbook(builder, _defaults);
+        ExportBuilder<TDto> exportBuilder = new();
+        
+        exportBuilder.WithData(data);
+        
+        configureColumns(exportBuilder.ColumnBuilder);
+        
+        return new OpenXmlWorkbookHelper<TDto>()
+               .CreateWorkbook(exportBuilder, _settings);
     }
-}
 }
