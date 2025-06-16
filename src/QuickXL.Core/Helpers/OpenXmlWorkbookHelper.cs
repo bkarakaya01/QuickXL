@@ -8,7 +8,7 @@ using QuickXL.Core.Settings;
 namespace QuickXL.Core.Helpers
 {
     //OpenXmlWorkbookHelper
-    internal sealed class XLWorkbookHelper<TDto>
+    internal sealed class OpenXmlWorkbookHelper<TDto>
         where TDto : class, new()
     {
         public byte[] CreateWorkbook(ExportBuilder<TDto> exportBuilder, WorkbookSettings settings)
@@ -16,11 +16,12 @@ namespace QuickXL.Core.Helpers
             Guard.Against.Null(exportBuilder, nameof(exportBuilder));
             Guard.Against.Null(settings, nameof(settings));
 
-            // Sütun başlığı (header) isimleri ve karşılık gelen property adları
             var headers = exportBuilder.ColumnBuilder.ColumnBuilderItems
-                              .Select(x => x.HeaderName).ToList();
+                                .Select(x => x.HeaderName)
+                                .ToList();
             var propNames = exportBuilder.ColumnBuilder.ColumnBuilderItems
-                              .Select(x => x.GetPropertyName()).ToList();
+                                .Select(x => x.GetPropertyName())
+                                .ToList();
 
             using var ms = new MemoryStream();
             using (var document = SpreadsheetDocument.Create(ms, SpreadsheetDocumentType.Workbook, true))
@@ -65,7 +66,7 @@ namespace QuickXL.Core.Helpers
                     {
                         var text = GetPropertyValue(item, propNames[colIdx]);
                         var cell = CreateTextCell(colIdx, rowIndex - 1, text);
-                        cell.StyleIndex = 2; // data cell format
+                        cell.StyleIndex = 2; // data format
                         dataRow.Append(cell);
                     }
                     sheetData.Append(dataRow);
@@ -84,40 +85,42 @@ namespace QuickXL.Core.Helpers
         private static Stylesheet GenerateStylesheet(ExportBuilder<TDto> exportBuilder)
         {
             var gs = exportBuilder.ColumnBuilder.XLGeneralStyle;
-            // (aynı önceki örnek: fonts, fills, borders, cellFormats oluştur)
-            // headerStyle: styleIndex=1, dataStyle: styleIndex=2
-            var stylesheet = new Stylesheet(
-                new Fonts(
-                    new Font(), // default
-                    new Font(
-                        new Bold(),
-                        new FontSize { Val = gs?.HeaderStyle.FontSize ?? 11 },
-                        new Color
-                        {
-                            Rgb = new HexBinaryValue(
-        (               gs?.HeaderStyle.ForegroundColor ?? "#000000").TrimStart('#')
-    )
-                        },
-                        new FontName { Val = gs?.HeaderStyle.FontName ?? "Calibri" }
-                    )
-                ),
-                new Fills(
-                    new Fill(new PatternFill { PatternType = PatternValues.None }),
-                    new Fill(new PatternFill { PatternType = PatternValues.Gray125 })
-                ),
-                new Borders(new Border()),
-                new CellStyleFormats(new CellFormat()),
-                new CellFormats(
-                    new CellFormat(),                  
-                    new CellFormat { FontId = 1, ApplyFont = true },
-                    new CellFormat { FontId = 0, ApplyFont = true }
+
+            var fonts = new Fonts(
+                new Font(), // default font
+                new Font(   // header font
+                    new Bold(),
+                    new FontSize { Val = gs?.HeaderStyle.FontSize ?? 11 },
+                    new Color
+                    {
+                        Rgb = new HexBinaryValue(
+                            (gs?.HeaderStyle.ForegroundColor ?? "#000000")
+                                .TrimStart('#'))
+                    },
+                    new FontName { Val = gs?.HeaderStyle.FontName ?? "Calibri" }
                 )
             );
-            return stylesheet;
+
+            var fills = new Fills(
+                new Fill(new PatternFill { PatternType = PatternValues.None }),
+                new Fill(new PatternFill { PatternType = PatternValues.Gray125 })
+            );
+
+            var borders = new Borders(new Border());
+
+            var cellStyleFormats = new CellStyleFormats(new CellFormat());
+
+            var cellFormats = new CellFormats(
+                new CellFormat(),                         // index=0 default
+                new CellFormat { FontId = 1, ApplyFont = true }, // index=1 header
+                new CellFormat { FontId = 0, ApplyFont = true }  // index=2 data
+            );
+
+            return new Stylesheet(fonts, fills, borders, cellStyleFormats, cellFormats);
         }
 
         private static Cell CreateTextCell(int colIndex, int rowIndex, string text)
-            => new()
+            => new Cell
             {
                 CellReference = GetCellReference(colIndex, rowIndex),
                 DataType = CellValues.String,
@@ -131,19 +134,24 @@ namespace QuickXL.Core.Helpers
             WorkbookSettings settings)
         {
             ArgumentNullException.ThrowIfNull(settings);
-            
-            // Her sütun için en uzun karakter sayısını hesapla
+
             int count = headers.Count;
             var maxLens = new int[count];
             for (int i = 0; i < count; i++)
                 maxLens[i] = headers[i].Length;
 
             foreach (var item in exportBuilder.Data)
+            {
                 for (int i = 0; i < count; i++)
                 {
-                    var val = GetPropertyValue(item, exportBuilder.ColumnBuilder.ColumnBuilderItems[i].GetPropertyName());
-                    if (val.Length > maxLens[i]) maxLens[i] = val.Length;
+                    var val = GetPropertyValue(
+                        item,
+                        exportBuilder.ColumnBuilder.ColumnBuilderItems[i]
+                            .GetPropertyName());
+                    if (val.Length > maxLens[i])
+                        maxLens[i] = val.Length;
                 }
+            }
 
             var cols = new Columns();
             for (int i = 0; i < count; i++)
@@ -157,6 +165,7 @@ namespace QuickXL.Core.Helpers
                     CustomWidth = true
                 });
             }
+
             wsPart.Worksheet.InsertAt(cols, 0);
         }
 
