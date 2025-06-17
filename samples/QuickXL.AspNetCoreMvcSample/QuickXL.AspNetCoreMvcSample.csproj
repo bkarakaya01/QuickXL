@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\QuickXL.Core\QuickXL.Core.csproj" />
+    <PackageReference Include="QuickXL" Version="1.0.0" />
   </ItemGroup>
 
 </Project>
