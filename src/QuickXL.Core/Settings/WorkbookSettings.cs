@@ -1,13 +1,7 @@
 ﻿namespace QuickXL.Core.Settings;
 
-public class WorkbookSettings
+internal record WorkbookSettings
 {
     public int FirstRowIndex { get; set; }
     public string? SheetName { get; set; }
-
-    public WorkbookSettings()
-    {
-        FirstRowIndex = 0;
-        SheetName = "QuickXL";
-    }
 }

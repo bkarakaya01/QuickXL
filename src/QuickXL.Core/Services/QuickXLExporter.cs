@@ -9,40 +9,18 @@ internal class QuickXLExporter : IXLExporter
 {
     private readonly WorkbookSettings _settings;
 
-    public QuickXLExporter(QuickXLOptions options)
+    public QuickXLExporter(QuickXLOptions opts)
     {
         _settings = new WorkbookSettings
         {
-            SheetName = options.DefaultSheetName,
-            FirstRowIndex = options.DefaultFirstRowIndex
+            SheetName = opts.DefaultSheetName,
+            FirstRowIndex = opts.DefaultFirstRowIndex
         };
     }
 
-    public byte[] Export<TDto>(Action<ExportBuilder<TDto>> buildAction)
+    public ExportBuilder<TDto> CreateBuilder<TDto>()
         where TDto : class, new()
     {
-        ExportBuilder<TDto> builder = new();
-        buildAction(builder);
-
-        OpenXmlWorkbookHelper<TDto> helper = new();
-        return helper.CreateWorkbook(builder, _settings);
-    }
-
-    public byte[] Export<TDto>(
-    IEnumerable<TDto> data,
-    Action<ColumnBuilder<TDto>> configureColumns)
-    where TDto : class, new()
-    {
-        Guard.Against.Null(data, nameof(data));
-        Guard.Against.Null(configureColumns, nameof(configureColumns));
-
-        ExportBuilder<TDto> exportBuilder = new();
-        
-        exportBuilder.WithData(data);
-        
-        configureColumns(exportBuilder.ColumnBuilder);
-        
-        return new OpenXmlWorkbookHelper<TDto>()
-               .CreateWorkbook(exportBuilder, _settings);
+        return new ExportBuilder<TDto>(_settings);
     }
 }

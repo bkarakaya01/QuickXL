@@ -9,7 +9,7 @@ public static class QuickXLServiceCollectionExtensions
         this IServiceCollection services,
         Action<QuickXLOptions>? configure = null)
     {
-        var options = new QuickXLOptions();
+        QuickXLOptions options = new();
         configure?.Invoke(options);
 
         services.AddSingleton(options);

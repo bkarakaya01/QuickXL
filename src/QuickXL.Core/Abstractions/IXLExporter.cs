@@ -4,11 +4,9 @@ namespace QuickXL;
 
 public interface IXLExporter
 {
-    byte[] Export<TDto>(Action<ExportBuilder<TDto>> buildAction)
-        where TDto : class, new();
-
-    byte[] Export<TDto>(
-            IEnumerable<TDto> data,
-            Action<ColumnBuilder<TDto>> configureColumns)
-            where TDto : class, new();
+    /// <summary>
+    /// Yeni bir ColumnBuilder başlatır. 
+    /// Zincir sonrası .Build() ile byte[] elde edilir.
+    /// </summary>
+    ExportBuilder<TDto> CreateBuilder<TDto>() where TDto : class, new();
 }

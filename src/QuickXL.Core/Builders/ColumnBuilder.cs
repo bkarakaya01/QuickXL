@@ -1,7 +1,6 @@
 ﻿using Ardalis.GuardClauses;
-using QuickXL.Core.Factory;
+using QuickXL.Core.Helpers;
 using QuickXL.Core.Models;
-using QuickXL.Core.Settings;
 using QuickXL.Core.Settings.Columns;
 using QuickXL.Core.Styles;
 using System.Linq.Expressions;
@@ -45,14 +44,9 @@ public sealed class ColumnBuilder<TDto>
         return this;
     }
 
-    public Exporter<TDto> Build(Action<WorkbookSettings>? configuration = null)
-    {
-        Guard.Against.Null(ExportBuilder);
-
-        WorkbookSettings workbookSettings = new();
-
-        configuration?.Invoke(workbookSettings);
-
-        return ExporterFactory<TDto>.CreateExporter(ExportBuilder!, workbookSettings);
+    public byte[] Export()
+    {        
+        return new OpenXmlWorkbookHelper<TDto>()
+                   .CreateWorkbook(ExportBuilder);
     }
 }

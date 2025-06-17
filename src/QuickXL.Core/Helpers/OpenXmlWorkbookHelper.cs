@@ -7,76 +7,119 @@ using QuickXL.Core.Settings;
 
 namespace QuickXL.Core.Helpers
 {
-    //OpenXmlWorkbookHelper
     internal sealed class OpenXmlWorkbookHelper<TDto>
         where TDto : class, new()
     {
-        public byte[] CreateWorkbook(ExportBuilder<TDto> exportBuilder, WorkbookSettings settings)
+        public byte[] CreateWorkbook(ExportBuilder<TDto> exportBuilder)
         {
             Guard.Against.Null(exportBuilder, nameof(exportBuilder));
-            Guard.Against.Null(settings, nameof(settings));
+            WorkbookSettings? settings = exportBuilder.WorkbookSettings
+                           ?? throw new ArgumentNullException(nameof(exportBuilder.WorkbookSettings));
 
-            var headers = exportBuilder.ColumnBuilder.ColumnBuilderItems
-                                .Select(x => x.HeaderName)
-                                .ToList();
-            var propNames = exportBuilder.ColumnBuilder.ColumnBuilderItems
-                                .Select(x => x.GetPropertyName())
-                                .ToList();
+            var columns = exportBuilder.ColumnBuilder.ColumnBuilderItems;
+            int colCount = columns.Count;
+            if (colCount == 0)
+                throw new InvalidOperationException("En az bir sütun tanımlanmalıdır.");
+
+            // Sütun harflerini önceden hesapla
+            var columnRefs = Enumerable.Range(0, colCount)
+                                       .Select(ComputeColumnName)
+                                       .ToArray();
+
+            // Lambda'ları derle ve sakla
+            var getters = columns
+                .Select(c => c.ValueGetter)
+                .ToArray();
 
             using var ms = new MemoryStream();
             using (var document = SpreadsheetDocument.Create(ms, SpreadsheetDocumentType.Workbook, true))
             {
-                // 1. Workbook / Worksheet oluştur
-                var workbookPart = document.AddWorkbookPart();
-                workbookPart.Workbook = new Workbook();
-                var sheets = workbookPart.Workbook.AppendChild(new Sheets());
-                var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
-                worksheetPart.Worksheet = new Worksheet(new SheetData());
+                // Workbook oluştur
+                var wbPart = document.AddWorkbookPart();
+                wbPart.Workbook = new Workbook();
+
+                // Stylesheet ekle
+                var stylesPart = wbPart.AddNewPart<WorkbookStylesPart>();
+                stylesPart.Stylesheet = GenerateStylesheet(exportBuilder);
+                stylesPart.Stylesheet.Save();
+
+                // Sheets koleksiyonu
+                var sheets = wbPart.Workbook.AppendChild(new Sheets());
+                var wsPart = wbPart.AddNewPart<WorksheetPart>();
+
+                // Streaming API ile SheetData oluştur
+                using (var writer = OpenXmlWriter.Create(wsPart))
+                {
+                    writer.WriteStartElement(new Worksheet());
+
+                    // Columns (genişlik)
+                    writer.WriteStartElement(new Columns());
+                    for (int c = 0; c < colCount; c++)
+                    {
+                        double width = CalculateApproxWidth(
+                            exportBuilder.Data, getters[c], columns[c].HeaderName.Length);
+                        writer.WriteElement(new Column
+                        {
+                            Min = (uint)(c + 1),
+                            Max = (uint)(c + 1),
+                            Width = width,
+                            CustomWidth = true
+                        });
+                    }
+                    writer.WriteEndElement(); // Columns
+
+                    // SheetData başlangıcı
+                    writer.WriteStartElement(new SheetData());
+
+                    // Header satırı
+                    int headerRow = settings.FirstRowIndex + 1;
+                    writer.WriteStartElement(new Row { RowIndex = (uint)headerRow });
+                    for (int c = 0; c < colCount; c++)
+                    {
+                        writer.WriteElement(new Cell
+                        {
+                            CellReference = $"{columnRefs[c]}{headerRow}",
+                            DataType = CellValues.String,
+                            StyleIndex = 1U,
+                            CellValue = new CellValue(columns[c].HeaderName)
+                        });
+                    }
+                    writer.WriteEndElement(); // Row
+
+                    // Veri satırları
+                    int rowIdx = headerRow + 1;
+                    foreach (var item in exportBuilder.Data)
+                    {
+                        writer.WriteStartElement(new Row { RowIndex = (uint)rowIdx });
+                        for (int c = 0; c < colCount; c++)
+                        {
+                            var raw = getters[c](item);
+                            var text = raw?.ToString() ?? string.Empty;
+                            writer.WriteElement(new Cell
+                            {
+                                CellReference = $"{columnRefs[c]}{rowIdx}",
+                                DataType = CellValues.String,
+                                StyleIndex = 2U,
+                                CellValue = new CellValue(text)
+                            });
+                        }
+                        writer.WriteEndElement(); // Row
+                        rowIdx++;
+                    }
+
+                    writer.WriteEndElement(); // SheetData
+                    writer.WriteEndElement(); // Worksheet
+                }
+
+                // Sheet tanımını ekle
                 sheets.Append(new Sheet
                 {
-                    Id = workbookPart.GetIdOfPart(worksheetPart),
+                    Id = wbPart.GetIdOfPart(wsPart),
                     SheetId = 1,
                     Name = settings.SheetName
                 });
 
-                // 2. Stylesheet ekle
-                var stylesPart = workbookPart.AddNewPart<WorkbookStylesPart>();
-                stylesPart.Stylesheet = GenerateStylesheet(exportBuilder);
-                stylesPart.Stylesheet.Save();
-
-                var sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
-
-                // 3. Header satırı
-                int headerRowIndex = settings.FirstRowIndex + 1;
-                var headerRow = new Row { RowIndex = (uint)headerRowIndex };
-                for (int colIdx = 0; colIdx < headers.Count; colIdx++)
-                {
-                    var cell = CreateTextCell(colIdx, headerRowIndex - 1, headers[colIdx]);
-                    cell.StyleIndex = 1; // header format
-                    headerRow.Append(cell);
-                }
-                sheetData!.Append(headerRow);
-
-                // 4. Veri satırları
-                int rowIndex = headerRowIndex + 1;
-                foreach (var item in exportBuilder.Data)
-                {
-                    var dataRow = new Row { RowIndex = (uint)rowIndex };
-                    for (int colIdx = 0; colIdx < propNames.Count; colIdx++)
-                    {
-                        var text = GetPropertyValue(item, propNames[colIdx]);
-                        var cell = CreateTextCell(colIdx, rowIndex - 1, text);
-                        cell.StyleIndex = 2; // data format
-                        dataRow.Append(cell);
-                    }
-                    sheetData.Append(dataRow);
-                    rowIndex++;
-                }
-
-                // 5. Sütun genişliklerini yaklaşık auto–size yap
-                SetColumnWidths(worksheetPart, headers, exportBuilder, settings);
-
-                workbookPart.Workbook.Save();
+                wbPart.Workbook.Save();
             }
 
             return ms.ToArray();
@@ -87,8 +130,8 @@ namespace QuickXL.Core.Helpers
             var gs = exportBuilder.ColumnBuilder.XLGeneralStyle;
 
             var fonts = new Fonts(
-                new Font(), // default font
-                new Font(   // header font
+                new Font(), // default
+                new Font(
                     new Bold(),
                     new FontSize { Val = gs?.HeaderStyle.FontSize ?? 11 },
                     new Color
@@ -107,11 +150,9 @@ namespace QuickXL.Core.Helpers
             );
 
             var borders = new Borders(new Border());
-
             var cellStyleFormats = new CellStyleFormats(new CellFormat());
-
             var cellFormats = new CellFormats(
-                new CellFormat(),                         // index=0 default
+                new CellFormat(),                            // index=0 default
                 new CellFormat { FontId = 1, ApplyFont = true }, // index=1 header
                 new CellFormat { FontId = 0, ApplyFont = true }  // index=2 data
             );
@@ -119,73 +160,31 @@ namespace QuickXL.Core.Helpers
             return new Stylesheet(fonts, fills, borders, cellStyleFormats, cellFormats);
         }
 
-        private static Cell CreateTextCell(int colIndex, int rowIndex, string text)
-            => new Cell
-            {
-                CellReference = GetCellReference(colIndex, rowIndex),
-                DataType = CellValues.String,
-                CellValue = new CellValue(text)
-            };
-
-        private static void SetColumnWidths(
-            WorksheetPart wsPart,
-            List<string> headers,
-            ExportBuilder<TDto> exportBuilder,
-            WorkbookSettings settings)
+        private static double CalculateApproxWidth(
+            IEnumerable<TDto> data,
+            Func<TDto, object?> getter,
+            int headerLength)
         {
-            ArgumentNullException.ThrowIfNull(settings);
-
-            int count = headers.Count;
-            var maxLens = new int[count];
-            for (int i = 0; i < count; i++)
-                maxLens[i] = headers[i].Length;
-
-            foreach (var item in exportBuilder.Data)
+            int max = headerLength;
+            foreach (var item in data)
             {
-                for (int i = 0; i < count; i++)
-                {
-                    var val = GetPropertyValue(
-                        item,
-                        exportBuilder.ColumnBuilder.ColumnBuilderItems[i]
-                            .GetPropertyName());
-                    if (val.Length > maxLens[i])
-                        maxLens[i] = val.Length;
-                }
+                var text = getter(item)?.ToString() ?? string.Empty;
+                if (text.Length > max) max = text.Length;
             }
-
-            var cols = new Columns();
-            for (int i = 0; i < count; i++)
-            {
-                double width = Math.Min(maxLens[i] * 1.2, 255);
-                cols.Append(new Column
-                {
-                    Min = (uint)(i + 1),
-                    Max = (uint)(i + 1),
-                    Width = width,
-                    CustomWidth = true
-                });
-            }
-
-            wsPart.Worksheet.InsertAt(cols, 0);
+            return Math.Min(max * 1.2, 255);
         }
 
-        private static string GetCellReference(int colIndex, int rowIndex)
+        private static string ComputeColumnName(int colIndex)
         {
-            string colName = "";
+            string name = string.Empty;
             int dividend = colIndex + 1;
             while (dividend > 0)
             {
                 int mod = (dividend - 1) % 26;
-                colName = Convert.ToChar('A' + mod) + colName;
+                name = (char)('A' + mod) + name;
                 dividend = (dividend - mod) / 26;
             }
-            return $"{colName}{rowIndex + 1}";
+            return name;
         }
-
-        private static string GetPropertyValue(TDto item, string propertyName)
-            => item.GetType()
-                   .GetProperty(propertyName)!
-                   .GetValue(item)?
-                   .ToString() ?? string.Empty;
     }
 }
