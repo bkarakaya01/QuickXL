@@ -2,6 +2,6 @@
 
 internal record WorkbookSettings
 {
-    public int FirstRowIndex { get; set; }
-    public string? SheetName { get; set; }
+    public int FirstRowIndex { get; set; } = 0;
+    public string SheetName { get; set; } = null!;
 }
