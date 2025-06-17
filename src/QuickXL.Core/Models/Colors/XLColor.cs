@@ -1,27 +1,20 @@
-﻿using NPOI.XSSF.UserModel;
-using System.Drawing;
+﻿namespace QuickXL.Core.Models.Colors;
 
-namespace QuickXL.Core.Models.Colors
+public readonly struct XLColor(byte r, byte g, byte b, byte? a = null)
 {
-    public readonly struct XLColor(byte r, byte g, byte b, byte? a = null)
-    {
-        public int R { get; } = r;
-        public int G { get; } = g;
-        public int B { get; } = b;
-        public int? A { get; } = a;
+    public byte R { get; } = r;
+    public byte G { get; } = g;
+    public byte B { get; } = b;
+    public byte? A { get; } = a;
 
+    public static XLColor Make(byte r, byte g, byte b, byte? a = null)
+        => new(r, g, b, a);
 
-        public static XLColor Make(byte r, byte g, byte b, byte? a = null)
-        {
-            return new(r, g, b, a);
-        }
+    public override string ToString()
+        => A.HasValue
+           ? $"#{A.Value:X2}{R:X2}{G:X2}{B:X2}"
+           : $"#{R:X2}{G:X2}{B:X2}";
 
-
-        public static implicit operator XSSFColor(XLColor color)
-        {
-            return color.A.HasValue
-                ? new XSSFColor(Color.FromArgb(color.A.Value, color.R, color.G, color.B))
-                : new XSSFColor(Color.FromArgb(color.R, color.G, color.B));
-        }
-    }
+    public static implicit operator string(XLColor color)
+        => color.ToString();
 }

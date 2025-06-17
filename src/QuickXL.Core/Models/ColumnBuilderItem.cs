@@ -13,6 +13,8 @@ namespace QuickXL.Core.Models
 
         public ColumnSettings ColumnSettings { get; set; } = columnSettings;
 
+        public readonly Func<TDto, object?> ValueGetter = propertySelector.Compile();
+
         private static string GetPropertyName(Expression<Func<TDto, object>> propertySelector)
         {
             if (propertySelector.Body is MemberExpression member)
