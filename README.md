@@ -20,50 +20,6 @@ dotnet add package QuickXL
 
 > The QuickXL package includes its dependencies (`DocumentFormat.OpenXml`, `Ardalis.GuardClauses`, etc.) transitively.
 
-## Basic Console Usage
-
-```csharp
-using System;
-using System.Collections.Generic;
-using System.IO;
-using QuickXL;
-
-class Program
-{
-    static void Main()
-    {
-        // 1) Prepare your data
-        var people = new List<Person>
-        {
-            new Person { Name = "Alice", Age = 30 },
-            new Person { Name = "Bob",   Age = 25 }
-        };
-
-        // 2) Configure exporter (optionally via DI)
-        var options  = new QuickXLOptions { DefaultSheetName = "Sheet1", DefaultFirstRowIndex = 0 };
-        var exporter = new QuickXLExporter(options);
-
-        // 3) Build & export
-        byte[] fileBytes = exporter
-            .CreateBuilder<Person>()
-            .WithData(people)
-            .AddColumn("Name", p => p.Name)
-            .AddColumn("Age",  p => p.Age)
-            .Export();
-
-        // 4) Write to disk
-        File.WriteAllBytes("report.xlsx", fileBytes);
-        Console.WriteLine("report.xlsx created");
-    }
-}
-
-public class Person
-{
-    public string Name { get; set; } = string.Empty;
-    public int    Age  { get; set; }
-}
-```
-
 ## ASP.NET Core Minimal API Example
 
 ```csharp
@@ -84,13 +40,13 @@ var app = builder.Build();
 
 app.MapGet("/export", (IXLExporter exporter) =>
 {
-    var data = new[]
+    Person[] data = new Person[]
     {
         new Person { Name = "Alice", Age = 30 },
         new Person { Name = "Bob",   Age = 25 }
     };
 
-    var bytes = exporter
+    byte[] bytes = exporter
         .CreateBuilder<Person>()
         .WithData(data)
         .AddColumn("Name", x => x.Name)
@@ -105,6 +61,13 @@ app.MapGet("/export", (IXLExporter exporter) =>
 });
 
 app.Run();
+
+public class Person
+{
+    public string Name { get; set; } = string.Empty;
+    public int    Age  { get; set; }
+}
+
 ```
 
 ## Advanced Configuration
