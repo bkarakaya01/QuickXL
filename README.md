@@ -2,6 +2,11 @@
 
 QuickXL is a lightweight .NET library for generating Excel (.xlsx) files using the Open XML SDK. It provides a simple, fluent API to define columns, map your data, and export to a `byte[]` or stream, without relying on heavy interop or third‑party dependencies.
 
+## Supported Frameworks
+
+- .NET 8.0
+- .NET Standard 2.0 (includes .NET Core 3.1, 5, 6, 7, .NET Framework 4.6.1+, Xamarin, Mono…)
+
 ## Features
 
 - Pure .NET Core, no COM or Office installation required
