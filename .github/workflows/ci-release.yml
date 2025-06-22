@@ -1,6 +1,11 @@
 # .github/workflows/ci-release.yml
 name: CI & Release
 
+# Grant write permission so the action-gh-release can create a Release
+permissions:
+  contents: write
+  packages: write
+  
 on:
   push:
     branches:
