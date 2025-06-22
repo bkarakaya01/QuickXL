@@ -4,7 +4,7 @@ name: CI & Release
 on:
   push:
     branches:
-      - master    # or main, adjust as needed
+      - master
     tags:
       - 'v*.*.*'  # semantic version tags (e.g. v1.1.0)
 
