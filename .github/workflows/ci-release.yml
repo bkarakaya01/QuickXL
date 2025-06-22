@@ -1,4 +1,3 @@
-﻿```yaml
 # .github/workflows/ci-release.yml
 name: CI & Release
 
@@ -90,4 +89,3 @@ jobs:
             - 🎉 Added multi-target support: net8.0 & netstandard2.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-```
