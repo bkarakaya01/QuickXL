@@ -1,34 +1,34 @@
-﻿name: CI & Release
+﻿```yaml
+# .github/workflows/ci-release.yml
+name: CI & Release
 
 on:
   push:
-    branches:
+    branches:      # Trigger on pushes to master
       - master
-    tags:
+    tags:          # Trigger on semver tags
       - 'v*.*.*'
 
 jobs:
   build-and-test:
     runs-on: windows-latest
-    strategy:
-      matrix:
-        tfm: [net8.0, netstandard2.0]
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Setup .NET ${{ matrix.tfm }}
+      - name: Setup .NET SDK
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: ${{ matrix.tfm }}
+          dotnet-version: '8.x'    # Install .NET 8 SDK (covers netstandard2.0 too)
 
-      - name: Restore
+      - name: Restore dependencies
         run: dotnet restore
 
-      - name: Build
-        run: dotnet build --no-restore -c Release -f ${{ matrix.tfm }}
+      - name: Build project
+        run: dotnet build --no-restore -c Release
 
-      - name: Test
-        run: dotnet test --no-build -c Release -f ${{ matrix.tfm }}
+      - name: Run tests
+        run: dotnet test  --no-build    -c Release
 
   pack:
     needs: build-and-test
@@ -36,17 +36,21 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup .NET
+      - name: Setup .NET SDK
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '8.x'
 
-      - name: Pack
-        run: dotnet pack src/QuickXL.Core/QuickXL.Core.csproj -c Release -o ./nupkg
+      - name: Pack NuGet package
+        run: |
+          dotnet pack src/QuickXL.Core/QuickXL.Core.csproj \
+            -c Release \
+            -o ./nupkg
 
-      - uses: actions/upload-artifact@v3
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v3
         with:
-          name: nupkg
+          name: QuickXL-nupkg
           path: ./nupkg/*.nupkg
 
   publish-nuget:
@@ -54,22 +58,23 @@ jobs:
     needs: pack
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Download package
+      - name: Download package artifact
         uses: actions/download-artifact@v3
         with:
-          name: nupkg
+          name: QuickXL-nupkg
 
-      - name: Setup .NET
+      - name: Setup .NET SDK
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '8.x'
 
-      - name: Publish to NuGet
+      - name: Publish to NuGet.org
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-        run: dotnet nuget push ./nupkg/*.nupkg --api-key $NUGET_API_KEY --source https://api.nuget.org/v3/index.json
+        run: |
+          dotnet nuget push ./nupkg/*.nupkg \
+            --api-key $NUGET_API_KEY \
+            --source https://api.nuget.org/v3/index.json
 
   create-github-release:
     if: startsWith(github.ref, 'refs/tags/v')
@@ -82,6 +87,7 @@ jobs:
           tag_name: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
           body: |
-            - 🎉 Multi-target support: net8.0 & netstandard2.0
+            - 🎉 Added multi-target support: net8.0 & netstandard2.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
