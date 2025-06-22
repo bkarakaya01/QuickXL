@@ -1,11 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
+		<!-- Target both .NET 8.0 and .NET Standard 2.0 -->
 		<TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
 
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-
+		<!-- Package metadata -->
 		<Version>1.1.0</Version>
 		<PackageId>QuickXL</PackageId>
 		<Authors>Burak Karakaya</Authors>
@@ -13,9 +12,24 @@
 		<Description>Lightweight .NET library for generating and importing Excel files.</Description>
 		<PackageTags>excel;openxml;export;import</PackageTags>
 		<RepositoryUrl>https://github.com/bkarakaya01/QuickXL</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/bkarakaya01/QuickXL</PackageProjectUrl>
 		<License>MIT</License>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/bkarakaya01/QuickXL</PackageProjectUrl>
+	</PropertyGroup>
+
+	<!-- Enable C# 11 features only for .NET 8.0 target -->
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+
+	<!-- Use C# 8.0 for .NET Standard 2.0 target -->
+	<!-- netstandard2.0 target: enable latest C# features (primary constructors, file-scoped namespace) -->
+	<PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+		<LangVersion>latest</LangVersion>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
 
 	<ItemGroup>
