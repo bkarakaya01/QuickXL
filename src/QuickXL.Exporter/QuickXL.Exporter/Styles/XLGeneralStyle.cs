@@ -1,6 +1,4 @@
-﻿using QuickXL.Exporter.Styles.Columns;
-
-namespace QuickXL.Exporter.Styles
+﻿namespace QuickXL.Exporter.Styles
 {
     public class XLGeneralStyle
     {
