@@ -1,7 +1,13 @@
 # QuickXL
 
-QuickXL is a lightweight .NET library for generating Excel (.xlsx) files using the Open XML SDK. It provides a simple, fluent API to define columns, map your data, and export to a `byte[]` or stream, without relying on heavy interop or third‑party dependencies.
+QuickXL is a lightweight, zero-interop .NET library for generating and consuming Excel (`.xlsx`) files via the Open XML SDK. It exposes a simple, fluent API so you can:
 
+- Define your sheet name and data in code  
+- Add columns by property selector (no reflection in the hot loop)  
+- Automatically calculate column widths and apply basic styles  
+- Export to `byte[]` or stream in a single call  
+- Import rows back into `List<T>` via attribute-decorated POCOs  
+- 
 ## Supported Frameworks
 
 - .NET 8.0
@@ -25,53 +31,25 @@ dotnet add package QuickXL
 
 > The QuickXL package includes its dependencies (`DocumentFormat.OpenXml`, `Ardalis.GuardClauses`, etc.) transitively.
 
-## ASP.NET Core Minimal API Example
+## Quick Start: Export
 
 ```csharp
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 using QuickXL;
 
-var builder = WebApplication.CreateBuilder(args);
+// 1) Begin an export session by sheet name
+// 2) Supply your data
+// 3) Define columns by selector
+// 4) Call Export() to get a byte[] ready to write to disk or HTTP response
+byte[] excelBytes = ExcelExporter
+    .Create<Person>("MySheet")
+    .WithData(myPersonList)
+    .AddColumn(x => x.Name,     opts => opts.HeaderName = "Full Name")
+    .AddColumn(x => x.Age)
+    .AddColumn(x => x.IsActive, opts => opts.HeaderName = "Active?")
+    .Export();
 
-// Register QuickXL
-builder.Services.AddQuickXL(opts =>
-{
-    opts.DefaultSheetName     = "Sheet1";
-    opts.DefaultFirstRowIndex = 0;
-});
-
-var app = builder.Build();
-
-app.MapGet("/export", (IXLExporter exporter) =>
-{
-    Person[] data = new Person[]
-    {
-        new Person { Name = "Alice", Age = 30 },
-        new Person { Name = "Bob",   Age = 25 }
-    };
-
-    byte[] bytes = exporter
-        .CreateBuilder<Person>()
-        .WithData(data)
-        .AddColumn("Name", x => x.Name)
-        .AddColumn("Age",  x => x.Age)
-        .Export();
-
-    return Results.File(
-        bytes,
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "report.xlsx"
-    );
-});
-
-app.Run();
-
-public class Person
-{
-    public string Name { get; set; } = string.Empty;
-    public int    Age  { get; set; }
-}
+// Write to file
+File.WriteAllBytes("report.xlsx", excelBytes);
 
 ```
 
