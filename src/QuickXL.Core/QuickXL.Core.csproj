@@ -41,7 +41,8 @@
 
 	
 	<ItemGroup>
-	  <ProjectReference Include="..\QuickXL.Exporter\QuickXL.Exporter.csproj" />
+		<ProjectReference Include="..\QuickXL.Exporter\QuickXL.Exporter.csproj" />
+		<ProjectReference Include="..\QuickXL.Importer\QuickXL.Importer.csproj" />
 	</ItemGroup>
 
 </Project>
