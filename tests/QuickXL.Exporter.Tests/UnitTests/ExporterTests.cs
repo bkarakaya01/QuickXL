@@ -1,9 +1,4 @@
-﻿using NUnit.Framework;
-using QuickXL.Core.Contracts;
-using QuickXL.Core.Result;
-using QuickXL.Exporter.Tests.SampleProvider;
-
-namespace QuickXL.Exporter.Tests.UnitTests;
+﻿namespace QuickXL.Exporter.Tests.UnitTests;
 
 [TestFixture]
 [TestFixture]

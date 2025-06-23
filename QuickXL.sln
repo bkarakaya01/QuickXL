@@ -26,6 +26,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Çözüm Öğeleri", "Çöz
 		LICENSE = LICENSE
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickXL.Exporter", "src\QuickXL.Exporter\QuickXL.Exporter\QuickXL.Exporter.csproj", "{1E32CDD1-4BEF-44CA-AD2F-E01BB552FE8A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +58,10 @@ Global
 		{64D7421B-2BDC-421B-AE47-222037AD34A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{64D7421B-2BDC-421B-AE47-222037AD34A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{64D7421B-2BDC-421B-AE47-222037AD34A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E32CDD1-4BEF-44CA-AD2F-E01BB552FE8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E32CDD1-4BEF-44CA-AD2F-E01BB552FE8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E32CDD1-4BEF-44CA-AD2F-E01BB552FE8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E32CDD1-4BEF-44CA-AD2F-E01BB552FE8A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,6 +73,7 @@ Global
 		{89DC6EDC-AFFF-4A64-9211-DCBD8478779C} = {E42ACA66-CDA4-4A10-AF2B-0FDD81E7EF26}
 		{42DB1B8C-B6FB-4142-B417-17EBFE0120ED} = {47EC284B-61A8-4D30-A199-329B2644EA0E}
 		{64D7421B-2BDC-421B-AE47-222037AD34A1} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{1E32CDD1-4BEF-44CA-AD2F-E01BB552FE8A} = {E42ACA66-CDA4-4A10-AF2B-0FDD81E7EF26}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {079FEC4B-5CE3-445B-A6B8-53FB0F735E3C}
