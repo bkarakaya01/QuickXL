@@ -26,7 +26,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Çözüm Öğeleri", "Çöz
 		LICENSE = LICENSE
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickXL.Exporter", "src\QuickXL.Exporter\QuickXL.Exporter\QuickXL.Exporter.csproj", "{1E32CDD1-4BEF-44CA-AD2F-E01BB552FE8A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickXL.Exporter", "src\QuickXL.Exporter\QuickXL.Exporter.csproj", "{1E32CDD1-4BEF-44CA-AD2F-E01BB552FE8A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
