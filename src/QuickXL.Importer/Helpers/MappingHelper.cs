@@ -45,28 +45,59 @@ namespace QuickXL.Importer.Helpers
         }
 
         /// <summary>
-        /// Builds a setter action that parses the cell text into the property's type and assigns it.
-        /// Supports <see cref="int"/>, <see cref="double"/>, <see cref="bool"/>, <see cref="DateTime"/>,
-        /// and defaults to string for other types.
+        /// Builds a setter that parses the cell text into the target property’s type:
+        /// on success assigns the parsed value; on failure assigns default(T).
         /// </summary>
-        /// <param name="property">The property to set on the DTO.</param>
-        /// <returns>An action that takes the DTO instance and raw cell text.</returns>
         internal static Action<object, string> BuildSetter(PropertyInfo property)
         {
             return (dto, text) =>
             {
-                object value = text;
+                Type t = property.PropertyType;
 
-                if (property.PropertyType == typeof(int) && int.TryParse(text, out var iv))
-                    value = iv;
-                else if (property.PropertyType == typeof(double) && double.TryParse(text, out var dv))
-                    value = dv;
-                else if (property.PropertyType == typeof(bool) && bool.TryParse(text, out var bv))
-                    value = bv;
-                else if (property.PropertyType == typeof(DateTime) && DateTime.TryParse(text, out var dt))
-                    value = dt;
+                if (t == typeof(string))
+                {
+                    // Always assign strings
+                    property.SetValue(dto, text);
+                    return;
+                }
 
-                property.SetValue(dto, value);
+                if (t == typeof(int))
+                {
+                    if (int.TryParse(text, out var iv))
+                        property.SetValue(dto, iv);
+                    else
+                        property.SetValue(dto, default(int)); // 0
+                    return;
+                }
+
+                if (t == typeof(double))
+                {
+                    if (double.TryParse(text, out var dv))
+                        property.SetValue(dto, dv);
+                    else
+                        property.SetValue(dto, default(double)); // 0.0
+                    return;
+                }
+
+                if (t == typeof(bool))
+                {
+                    if (bool.TryParse(text, out var bv))
+                        property.SetValue(dto, bv);
+                    else
+                        property.SetValue(dto, default(bool)); // false
+                    return;
+                }
+
+                if (t == typeof(DateTime))
+                {
+                    if (DateTime.TryParse(text, out var dt))
+                        property.SetValue(dto, dt);
+                    else
+                        property.SetValue(dto, default(DateTime)); // DateTime.MinValue
+                    return;
+                }
+
+                // Other types: do nothing or consider throwing
             };
         }
     }

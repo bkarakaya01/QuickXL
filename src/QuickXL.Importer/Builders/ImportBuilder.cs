@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Spreadsheet;
+using QuickXL.Importer.Exceptions;
 using QuickXL.Importer.Helpers;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -117,7 +118,7 @@ namespace QuickXL.Importer
         public List<TDto> Import()
         {
             if (Stream == null)
-                throw new InvalidOperationException("No input source specified. Call FromFile() or FromStream() before Import().");
+                throw new NoSourceSpecifiedException();
 
             // 1) Read all rows from the worksheet
             var rows = WorksheetReader.ReadRows(Stream, out var wbPart);
