@@ -40,6 +40,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\QuickXL.Exporter\QuickXL.Exporter.csproj">
+			<PrivateAssets>all</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="..\QuickXL.Importer\QuickXL.Importer.csproj">
+			<PrivateAssets>all</PrivateAssets>
+		</ProjectReference>
+	</ItemGroup>
+	
+	<ItemGroup>
 		<!-- Exporter DLL -->
 		<None Include="..\QuickXL.Exporter\bin\Release\net8.0\QuickXL.Exporter.dll" Pack="true" PackagePath="lib/net8.0" />
 		<None Include="..\QuickXL.Exporter\bin\Release\netstandard2.0\QuickXL.Exporter.dll" Pack="true" PackagePath="lib/netstandard2.0" />
