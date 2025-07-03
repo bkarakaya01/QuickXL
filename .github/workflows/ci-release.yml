@@ -1,11 +1,9 @@
-# .github/workflows/ci-release.yml
 name: CI & Release
 
-# Grant write permission so the action-gh-release can create a Release
 permissions:
   contents: write
   packages: write
-  
+
 on:
   push:
     branches:
@@ -45,6 +43,12 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.x'
+
+      - name: Build Exporter
+        run: dotnet build src/QuickXL.Exporter/QuickXL.Exporter.csproj -c Release
+
+      - name: Build Importer
+        run: dotnet build src/QuickXL.Importer/QuickXL.Importer.csproj -c Release
 
       - name: Pack NuGet package
         run: dotnet pack src/QuickXL.Core/QuickXL.Core.csproj -c Release -o ./nupkg
@@ -88,5 +92,6 @@ jobs:
           name: Release ${{ github.ref_name }}
           body: |
             - 🎉 Added multi-target support (net8.0 & netstandard2.0)
+            - 🚀 Exporter and Importer integrated into package
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
