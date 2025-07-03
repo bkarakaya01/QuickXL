@@ -9,7 +9,7 @@ on:
     branches:
       - master
     tags:
-      - 'v*.*.*'  # Semantic version tags, e.g. v1.1.1
+      - 'v*.*.*'
 
 jobs:
   build-and-test:
@@ -44,11 +44,17 @@ jobs:
         with:
           dotnet-version: '8.x'
 
-      - name: Build Exporter
-        run: dotnet build src/QuickXL.Exporter/QuickXL.Exporter.csproj -c Release
+      - name: Build Exporter (net8.0)
+        run: dotnet build src/QuickXL.Exporter/QuickXL.Exporter.csproj -c Release -f net8.0
 
-      - name: Build Importer
-        run: dotnet build src/QuickXL.Importer/QuickXL.Importer.csproj -c Release
+      - name: Build Exporter (netstandard2.0)
+        run: dotnet build src/QuickXL.Exporter/QuickXL.Exporter.csproj -c Release -f netstandard2.0
+
+      - name: Build Importer (net8.0)
+        run: dotnet build src/QuickXL.Importer/QuickXL.Importer.csproj -c Release -f net8.0
+
+      - name: Build Importer (netstandard2.0)
+        run: dotnet build src/QuickXL.Importer/QuickXL.Importer.csproj -c Release -f netstandard2.0
 
       - name: Pack NuGet package
         run: dotnet pack src/QuickXL.Core/QuickXL.Core.csproj -c Release -o ./nupkg
@@ -91,7 +97,8 @@ jobs:
           tag_name: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
           body: |
-            - 🎉 Added multi-target support (net8.0 & netstandard2.0)
-            - 🚀 Exporter and Importer integrated into package
+            - ⚙ Important packaging fix: no external QuickXL.Exporter/Importer dependencies
+            - ✅ Multi-target support: net8.0 + netstandard2.0
+            - 🛠 Exporter and Importer included in single package
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

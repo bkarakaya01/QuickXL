@@ -5,7 +5,7 @@
 		<TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
 
 		<!-- Package metadata -->
-		<Version>2.0.1</Version>
+		<Version>2.0.2</Version>
 		<PackageId>QuickXL</PackageId>
 		<Authors>Burak Karakaya</Authors>
 		<Company>Burak Karakaya</Company>
@@ -39,10 +39,13 @@
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.6" />
 	</ItemGroup>
 
-	
 	<ItemGroup>
-		<ProjectReference Include="..\QuickXL.Exporter\QuickXL.Exporter.csproj" />
-		<ProjectReference Include="..\QuickXL.Importer\QuickXL.Importer.csproj" />
-	</ItemGroup>
+		<!-- Exporter DLL -->
+		<None Include="..\QuickXL.Exporter\bin\Release\net8.0\QuickXL.Exporter.dll" Pack="true" PackagePath="lib/net8.0" />
+		<None Include="..\QuickXL.Exporter\bin\Release\netstandard2.0\QuickXL.Exporter.dll" Pack="true" PackagePath="lib/netstandard2.0" />
 
+		<!-- Importer DLL -->
+		<None Include="..\QuickXL.Importer\bin\Release\net8.0\QuickXL.Importer.dll" Pack="true" PackagePath="lib/net8.0" />
+		<None Include="..\QuickXL.Importer\bin\Release\netstandard2.0\QuickXL.Importer.dll" Pack="true" PackagePath="lib/netstandard2.0" />
+	</ItemGroup>
 </Project>
