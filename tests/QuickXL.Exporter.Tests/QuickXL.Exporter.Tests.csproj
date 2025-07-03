@@ -17,9 +17,9 @@
     <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\QuickXL.Core\QuickXL.Core.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\QuickXL.Exporter\QuickXL.Exporter.csproj" />
+	</ItemGroup>
 
   <ItemGroup>
     <Using Include="NUnit.Framework" />

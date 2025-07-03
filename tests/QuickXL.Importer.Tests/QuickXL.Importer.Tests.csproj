@@ -18,7 +18,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\src\QuickXL.Core\QuickXL.Core.csproj" />
+		<ProjectReference Include="..\..\src\QuickXL.Importer\QuickXL.Importer.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
